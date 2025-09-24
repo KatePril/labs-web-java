@@ -1,4 +1,4 @@
-package org.kpi.lab1.domain.customer;ytn
+package org.kpi.lab1.domain.customer;
 
 import lombok.Builder;
 import lombok.Value;

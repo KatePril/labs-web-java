@@ -1,4 +1,4 @@
-package org.kpi.lab1.domain.order;
+package org.kpi.lab1.domain.cart;
 
 import lombok.Builder;
 import lombok.Value;
@@ -8,8 +8,8 @@ import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
-public class Order {
+public class Cart {
     Long id;
+    Long customerId;
     List<ProductItem> items;
-    Double total;
 }
