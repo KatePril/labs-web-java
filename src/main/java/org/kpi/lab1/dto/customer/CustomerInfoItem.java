@@ -1,11 +1,13 @@
-package org.kpi.lab1.domain.customer;
+package org.kpi.lab1.dto.customer;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @Value
-@Builder(toBuilder = true)
-public class Customer {
+@Builder
+@Jacksonized
+public class CustomerInfoItem {
     Long id;
     String name;
     String phone;
