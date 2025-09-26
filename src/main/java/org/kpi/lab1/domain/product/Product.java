@@ -9,6 +9,7 @@ import org.kpi.lab1.domain.category.Category;
 public class Product {
     Long id;
     String name;
+    String description;
     Double price;
     Category category;
 }

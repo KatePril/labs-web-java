@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true)
 @Jacksonized
 public class CategoryDto {
-    @NotBlank(message = "Category name is manddatory")
+    @NotBlank(message = "Category name is mandatory")
     String name;
 
     String description;
