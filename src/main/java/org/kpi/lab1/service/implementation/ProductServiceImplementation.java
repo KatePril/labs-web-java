@@ -1,6 +1,7 @@
 package org.kpi.lab1.service.implementation;
 
 import lombok.extern.slf4j.Slf4j;
+import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.service.ProductService;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,9 @@ public class ProductServiceImplementation implements ProductService {
 
     @Override
     public Product getProductById(Long id) {
-        return products.stream().filter(product -> product.getId().equals(id)).findFirst().orElse(null);
+        return products.stream()
+                .filter(product -> product.getId().equals(id))
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -38,6 +41,29 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     private List<Product> buildProductsMock() {
-        return List.of();
+        Category category = Category.builder().name("School supplies").build();
+        Category category1 = Category.builder().name("Clothes").build();
+        return List.of(
+            Product.builder()
+                .id(1L)
+                .name("Book")
+                .description("An interesting one")
+                .price(10.4)
+                .category(category)
+                .build(),
+            Product.builder()
+                .id(2L)
+                .name("T-shirt")
+                .description("A comfortable shirt")
+                .price(16.2)
+                .category(category1)
+                .build(),
+            Product.builder()
+                .id(3L)
+                .name("Pencil")
+                .price(5.3)
+                .category(category)
+                .build()
+        );
     };
 }
