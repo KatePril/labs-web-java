@@ -32,19 +32,17 @@ public class ProductServiceImplementation implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        products.put(product.getId(), product);
+    public Product updateProduct(Long id, Product product) {
+        products.put(id, product);
         return product;
     }
 
     @Override
-    public boolean deleteProduct(Long id) {
+    public void deleteProduct(Long id) {
         try {
             products.remove(id);
-            return true;
         } catch (Exception e) {
             log.error(e.getMessage());
-            return false;
         }
     }
 
