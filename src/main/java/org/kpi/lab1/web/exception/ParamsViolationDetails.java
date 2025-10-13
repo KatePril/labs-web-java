@@ -8,6 +8,6 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true)
 @Jacksonized
 public class ParamsViolationDetails {
-    String fieldName;
-    String reason;
+  String fieldName;
+  String reason;
 }

@@ -7,9 +7,9 @@ import org.kpi.lab1.domain.category.Category;
 @Value
 @Builder(toBuilder = true)
 public class Product {
-    Long id;
-    String name;
-    String description;
-    Double price;
-    Category category;
+  Long id;
+  String name;
+  String description;
+  Double price;
+  Category category;
 }

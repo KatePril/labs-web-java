@@ -8,7 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder(toBuilder = true)
 @Jacksonized
 public class CategoryItem {
-    Long id;
-    String name;
-    String description;
+  Long id;
+  String name;
+  String description;
 }

@@ -1,6 +1,5 @@
 package org.kpi.lab1.dto.product;
 
-
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Value;
@@ -13,6 +12,6 @@ import java.util.List;
 @Jacksonized
 public class ProductListDto {
 
-    @NotNull(message = "Product list cannot be null")
-    List<ProductDto> products;
+  @NotNull(message = "Product list cannot be null")
+  List<ProductDto> products;
 }

@@ -6,9 +6,9 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class Customer {
-    Long id;
-    String name;
-    String phone;
-    String email;
-    String address;
+  Long id;
+  String name;
+  String phone;
+  String email;
+  String address;
 }

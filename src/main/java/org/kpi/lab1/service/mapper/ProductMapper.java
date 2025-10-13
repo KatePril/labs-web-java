@@ -11,24 +11,23 @@ import org.mapstruct.Named;
 
 import java.util.List;
 
-
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "price", source = "price")
-    @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
-    ProductDto toProductDto(Product product);
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
+  ProductDto toProductDto(Product product);
 
-    default ProductListDto toProductListDto(List<Product> products) {
-        return ProductListDto.builder().products(toProductsDto(products)).build();
-    }
+  default ProductListDto toProductListDto(List<Product> products) {
+    return ProductListDto.builder().products(toProductsDto(products)).build();
+  }
 
-    List<ProductDto> toProductsDto(List<Product> products);
+  List<ProductDto> toProductsDto(List<Product> products);
 
-    @Named("toCategory")
-    default CategoryDto toCategoryDto(Category category) {
-        return null;
-    }
+  @Named("toCategory")
+  default CategoryDto toCategoryDto(Category category) {
+    return null;
+  }
 }

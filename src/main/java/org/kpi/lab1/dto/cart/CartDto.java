@@ -13,8 +13,8 @@ import java.util.List;
 @Jacksonized
 public class CartDto {
 
-    @NotNull(message = "Customer id cannot be null")
-    Long customerId;
+  @NotNull(message = "Customer id cannot be null")
+  Long customerId;
 
-    List<ProductItemDto> items;
+  List<ProductItemDto> items;
 }

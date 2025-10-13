@@ -6,22 +6,19 @@ import org.springframework.web.client.RestClient;
 
 @Component
 public class CustomerClient {
-    private final RestClient restClient;
+  private final RestClient restClient;
 
-    public CustomerClient(RestClient supplierRestClient) {
-        this.restClient = supplierRestClient;
+  public CustomerClient(RestClient supplierRestClient) {
+    this.restClient = supplierRestClient;
+  }
+
+  public CustomerInfoDto getCustomerInfo(String sku) {
+    try {
+      return restClient.get().uri("/client/info/{sku}", sku).retrieve().body(CustomerInfoDto.class);
+    } catch (Exception e) {
+
+      System.err.println("Error fetching client info: " + e.getMessage());
+      return null;
     }
-
-    public CustomerInfoDto getCustomerInfo(String sku) {
-        try {
-            return restClient.get()
-                    .uri("/client/info/{sku}", sku)
-                    .retrieve()
-                    .body(CustomerInfoDto.class);
-        } catch (Exception e) {
-
-            System.err.println("Error fetching client info: " + e.getMessage());
-            return null;
-        }
-    }
+  }
 }

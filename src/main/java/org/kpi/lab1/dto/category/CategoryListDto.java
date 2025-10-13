@@ -12,6 +12,6 @@ import java.util.List;
 @Jacksonized
 public class CategoryListDto {
 
-    @NotNull(message = "Categories list cannot be null")
-    List<CategoryDto> categories;
+  @NotNull(message = "Categories list cannot be null")
+  List<CategoryDto> categories;
 }

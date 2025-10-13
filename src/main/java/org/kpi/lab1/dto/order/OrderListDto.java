@@ -12,6 +12,6 @@ import java.util.List;
 @Jacksonized
 public class OrderListDto {
 
-    @NotNull(message = "Orders list cannot be null")
-    List<OrderDto> orders;
+  @NotNull(message = "Orders list cannot be null")
+  List<OrderDto> orders;
 }

@@ -11,11 +11,12 @@ import java.lang.annotation.*;
 @Documented
 public @interface ValidAddress {
 
-    String INVALID_ADDRESS_MSG = "The provided address is invalid. Valid address example: Street Green, Building 86-3";
+  String INVALID_ADDRESS_MSG =
+      "The provided address is invalid. Valid address example: Street Green, Building 86-3";
 
-    String message() default INVALID_ADDRESS_MSG;
+  String message() default INVALID_ADDRESS_MSG;
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+  Class<? extends Payload>[] payload() default {};
 }

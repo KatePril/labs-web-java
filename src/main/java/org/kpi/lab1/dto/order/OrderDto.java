@@ -13,9 +13,9 @@ import java.util.List;
 @Jacksonized
 public class OrderDto {
 
-    @NotNull(message = "Items list cannot be null")
-    List<ProductItemDto> items;
+  @NotNull(message = "Items list cannot be null")
+  List<ProductItemDto> items;
 
-    @NotNull(message = "Total cannot be null")
-    Double total;
+  @NotNull(message = "Total cannot be null")
+  Double total;
 }

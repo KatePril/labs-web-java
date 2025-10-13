@@ -10,9 +10,9 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class ProductItemDto {
 
-    @NotNull(message = "Product cannot be null")
-    ProductDto product;
+  @NotNull(message = "Product cannot be null")
+  ProductDto product;
 
-    @NotNull(message = "Quantity cannot be null")
-    int quantity;
+  @NotNull(message = "Quantity cannot be null")
+  int quantity;
 }

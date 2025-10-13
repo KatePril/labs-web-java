@@ -8,9 +8,9 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class CustomerInfoItem {
-    Long id;
-    String name;
-    String phone;
-    String email;
-    String address;
+  Long id;
+  String name;
+  String phone;
+  String email;
+  String address;
 }

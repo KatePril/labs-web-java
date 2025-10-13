@@ -9,12 +9,12 @@ import java.util.regex.Pattern;
 @Component
 public class AddressValidator implements ConstraintValidator<ValidAddress, String> {
 
-    private static final String ADDRESS_PATTERN = "Street [A-Za-z]+, Building \\d+-\\d+[a-z]?$";
+  private static final String ADDRESS_PATTERN = "Street [A-Za-z]+, Building \\d+-\\d+[a-z]?$";
 
-    private static final Pattern ADDRESS_PATTERN_PATTERN = Pattern.compile(ADDRESS_PATTERN);
+  private static final Pattern ADDRESS_PATTERN_PATTERN = Pattern.compile(ADDRESS_PATTERN);
 
-    @Override
-    public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return ADDRESS_PATTERN_PATTERN.matcher(s).matches();
-    }
+  @Override
+  public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
+    return ADDRESS_PATTERN_PATTERN.matcher(s).matches();
+  }
 }

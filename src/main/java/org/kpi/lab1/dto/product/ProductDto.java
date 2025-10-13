@@ -19,15 +19,15 @@ import java.security.cert.Extension;
 @GroupSequence({ProductDto.class, Extension.class})
 public class ProductDto {
 
-    @NotBlank(message = "Name is mandatory field")
-    @Size(max = 90, message = "Name cannot exceed 90 characters")
-    String name;
+  @NotBlank(message = "Name is mandatory field")
+  @Size(max = 90, message = "Name cannot exceed 90 characters")
+  String name;
 
-    @ValidDescription(groups = ExtendedValidation.class)
-    String description;
+  @ValidDescription(groups = ExtendedValidation.class)
+  String description;
 
-    @NotNull(message = "Price cannot be null")
-    Double price;
+  @NotNull(message = "Price cannot be null")
+  Double price;
 
-    CategoryDto category;
+  CategoryDto category;
 }

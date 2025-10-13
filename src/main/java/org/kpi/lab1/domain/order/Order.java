@@ -9,7 +9,7 @@ import java.util.List;
 @Value
 @Builder(toBuilder = true)
 public class Order {
-    Long id;
-    List<ProductItem> items;
-    Double total;
+  Long id;
+  List<ProductItem> items;
+  Double total;
 }

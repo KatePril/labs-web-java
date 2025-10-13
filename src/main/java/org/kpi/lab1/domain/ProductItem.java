@@ -7,6 +7,6 @@ import org.kpi.lab1.domain.product.Product;
 @Value
 @Builder(toBuilder = true)
 public class ProductItem {
-    Product product;
-    int quantity;
+  Product product;
+  int quantity;
 }
