@@ -32,7 +32,7 @@ public class ProductServiceTest {
   private static final Product DEFAULT_PRODUCT = buildProduct(ID);
 
   @Autowired
-  private ProductService productService;
+  private ProductServiceImplementation productService;
 
   @Test
   @Order(1)
