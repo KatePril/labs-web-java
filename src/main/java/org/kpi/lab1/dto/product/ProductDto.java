@@ -11,12 +11,10 @@ import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.validation.ExtendedValidation;
 import org.kpi.lab1.dto.validation.ValidDescription;
 
-import java.security.cert.Extension;
-
 @Value
 @Builder(toBuilder = true)
 @Jacksonized
-@GroupSequence({ProductDto.class, Extension.class})
+@GroupSequence({ProductDto.class, ExtendedValidation.class})
 public class ProductDto {
 
   @NotBlank(message = "Name is mandatory field")
