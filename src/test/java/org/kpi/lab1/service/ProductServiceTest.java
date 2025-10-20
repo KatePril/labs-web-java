@@ -1,10 +1,7 @@
 package org.kpi.lab1.service;
 
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.kpi.lab1.config.MappersTestConfiguration;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
@@ -21,6 +18,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes = {ProductServiceImplementation.class})
 @Import(MappersTestConfiguration.class)
@@ -46,6 +44,73 @@ public class ProductServiceTest {
     assertIterableEquals(
         products.stream().map(Product::getName).collect(Collectors.toList()),
         new ArrayList<>(Arrays.asList("Book", "T-shirt", "Comet pencil")));
+  }
+
+  @Test
+  @Order(2)
+  @DisplayName("Test get product by id")
+  public void testGetProductById() {
+    Product product = productService.getProductById(1L);
+    assertNotNull(product);
+    assertEquals("Book", product.getName());
+    assertEquals(1L, product.getId());
+    assertEquals("An interesting galaxy one", product.getDescription());
+    assertEquals(10.4, product.getPrice());
+    assertEquals(Category.builder().name("School supplies").build(), product.getCategory());
+  }
+
+  @Test
+  @Order(3)
+  @DisplayName("Should add a new product")
+  public void shouldAddProduct() {
+    Product newProduct = buildProduct(99L);
+
+    Product added = productService.addProduct(newProduct);
+    assertEquals(newProduct, added);
+
+    Product fetched = productService.getProductById(99L);
+    assertNotNull(fetched);
+    assertEquals(newProduct, fetched);
+    assertEquals(4, productService.getAllProducts().size());
+  }
+
+  @Test
+  @Order(4)
+  @DisplayName("Should update existing product")
+  public void shouldUpdateProduct() {
+    Product updatedProduct = Product.builder()
+            .id(99L)
+            .name("Updated product")
+            .price(55.5)
+            .category(CATEGORY)
+            .build();
+
+    Product result = productService.updateProduct(99L, updatedProduct);
+
+    assertEquals(updatedProduct, result);
+    Product fetched = productService.getProductById(99L);
+    assertNotNull(fetched);
+    assertEquals("Updated product", fetched.getName());
+    assertEquals(55.5, fetched.getPrice());
+  }
+
+  @Test
+  @Order(5)
+  @DisplayName("Should delete product by ID")
+  void shouldDeleteProduct() {
+    productService.deleteProduct(99L);
+
+    Product deleted = productService.getProductById(99L);
+    assertNull(deleted);
+    assertEquals(3, productService.getAllProducts().size());
+  }
+
+  @Test
+  @Order(6)
+  @DisplayName("Should handle deleting non-existent product gracefully")
+  void shouldHandleDeletingNonExistentProduct() {
+    Assertions.assertDoesNotThrow(() -> productService.deleteProduct(1000L));
+    assertNull(productService.getProductById(1000L));
   }
 
   private static Product buildProduct(Long id) {
