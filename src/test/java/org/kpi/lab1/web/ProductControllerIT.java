@@ -1,108 +1,107 @@
 package org.kpi.lab1.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.kpi.lab1.domain.category.Category;
+import org.kpi.lab1.config.MappersTestConfiguration;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
+import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@WebMvcTest(ProductController.class)
 @AutoConfigureMockMvc
-@DisplayName("Product Controller IT")
+@Import(MappersTestConfiguration.class)
+@DisplayName("Product Controller Integration Tests (with Mapper)")
 @Tag("product-service")
 public class ProductControllerIT {
+
   private static final String PRODUCT_NAME = "Comet product";
   private static final String PRODUCT_DESCRIPTION = "Comet product";
   private static final Double PRODUCT_PRICE = 10.7;
   private static final CategoryDto PRODUCT_CATEGORY =
-      CategoryDto.builder().name("Comet products").build();
+          CategoryDto.builder().name("Comet products").build();
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-  @MockitoSpyBean private ProductServiceImplementation productService;
+  @Autowired
+  private ProductDtoMapper productDtoMapper;
 
-  private WireMockServer wireMockServer;
+  @MockitoBean
+  private ProductServiceImplementation productService;
 
   @BeforeEach
   void setUp() {
-    wireMockServer = new WireMockServer(8089);
-    wireMockServer.start();
-    configureFor("localhost", 8089);
     reset(productService);
+  }
+
+  private static ProductDto buildProductDto() {
+    return ProductDto.builder()
+            .name(PRODUCT_NAME)
+            .description(PRODUCT_DESCRIPTION)
+            .price(PRODUCT_PRICE)
+            .category(PRODUCT_CATEGORY)
+            .build();
   }
 
   @Test
   @SneakyThrows
   void createProduct() {
-    ProductDto product = buildProduct();
-    stubFor(
-        WireMock.post("/api/v1/products")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(product))));
+    ProductDto productDto = buildProductDto();
+    Product product = productDtoMapper.toProduct(productDto);
 
-    mockMvc
-        .perform(
-            post("/api/v1/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(product)))
-        .andExpect(status().is2xxSuccessful())
-        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
-        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+    when(productService.addProduct(any(Product.class)))
+            .thenReturn(product);
+
+    mockMvc.perform(post("/api/v1/products")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(productDto)))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+            .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+            .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+
+    verify(productService, times(1)).addProduct(any(Product.class));
   }
 
   @Test
   @SneakyThrows
   void getAllProducts() {
-    ProductDto product = buildProduct();
-    stubFor(
-        WireMock.get("/api/v1/products")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(List.of(product)))));
-    mockMvc
-        .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
-        .andExpect(jsonPath("$[0].price").value(PRODUCT_DESCRIPTION));
+    ProductDto productDto = buildProductDto();
+    Product product = productDtoMapper.toProduct(productDto);
+
+    when(productService.getAllProducts()).thenReturn(List.of(product));
+
+    mockMvc.perform(get("/api/v1/products")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
+            .andExpect(jsonPath("$[0].description").value(PRODUCT_DESCRIPTION))
+            .andExpect(jsonPath("$[0].price").value(PRODUCT_PRICE));
 
     verify(productService, times(1)).getAllProducts();
   }
@@ -110,19 +109,17 @@ public class ProductControllerIT {
   @Test
   @SneakyThrows
   void getProductById() {
-    ProductDto product = buildProduct();
-    stubFor(
-        WireMock.get("/api/v1/products/1")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(product))));
-    mockMvc
-        .perform(get("/api/v1/products/{id}", 1L).accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-        .andExpect(jsonPath("$.price").value(PRODUCT_DESCRIPTION));
+    ProductDto productDto = buildProductDto();
+    Product product = productDtoMapper.toProduct(productDto);
+
+    when(productService.getProductById(1L)).thenReturn(product);
+
+    mockMvc.perform(get("/api/v1/products/{id}", 1L)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+            .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+            .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
 
     verify(productService, times(1)).getProductById(1L);
   }
@@ -130,52 +127,38 @@ public class ProductControllerIT {
   @Test
   @SneakyThrows
   void updateProduct() {
-    ProductDto updatedProduct =
-        ProductDto.builder()
+    ProductDto updatedDto = ProductDto.builder()
             .name("Updated Comet product")
             .description("Updated description")
             .price(30.0)
             .category(PRODUCT_CATEGORY)
             .build();
 
-    stubFor(
-        WireMock.put("/api/v1/products/1")
-            .willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(updatedProduct))));
+    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
 
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedProduct)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Updated Comet product"))
-        .andExpect(jsonPath("$.price").value(30.0))
-        .andExpect(jsonPath("$.description").value("Updated description"));
+    when(productService.updateProduct(eq(1L), any(Product.class)))
+            .thenReturn(updatedProduct);
 
-    verify(productService, times(1)).updateProduct(eq(1L), any());
+    mockMvc.perform(put("/api/v1/products/{id}", 1L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updatedDto)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Updated Comet product"))
+            .andExpect(jsonPath("$.description").value("Updated description"))
+            .andExpect(jsonPath("$.price").value(30.0));
+
+    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
   }
 
   @Test
   @SneakyThrows
   void deleteProduct() {
-    stubFor(WireMock.delete("/api/v1/products/1").willReturn(aResponse().withStatus(204)));
+    doNothing().when(productService).deleteProduct(1L);
 
-    mockMvc.perform(delete("/api/v1/products/{id}", 1L)).andExpect(status().isNoContent());
+    mockMvc.perform(delete("/api/v1/products/{id}", 1L))
+            .andExpect(status().isNoContent());
 
     verify(productService, times(1)).deleteProduct(1L);
-  }
-
-  private static ProductDto buildProduct() {
-    return ProductDto.builder()
-        .name(PRODUCT_NAME)
-        .description(PRODUCT_DESCRIPTION)
-        .price(PRODUCT_PRICE)
-        .category(PRODUCT_CATEGORY)
-        .build();
   }
 }
