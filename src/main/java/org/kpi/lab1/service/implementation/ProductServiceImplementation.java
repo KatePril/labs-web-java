@@ -27,6 +27,16 @@ public class ProductServiceImplementation implements ProductService {
 
   @Override
   public Product addProduct(Product product) {
+    if (product.getId() == null) {
+      long newId = products.size() + 1L;
+      product = Product.builder()
+              .id(newId)
+              .name(product.getName())
+              .description(product.getDescription())
+              .price(product.getPrice())
+              .category(product.getCategory())
+              .build();
+    }
     products.put(product.getId(), product);
     return product;
   }
