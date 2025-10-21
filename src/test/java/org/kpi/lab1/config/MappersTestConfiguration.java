@@ -1,6 +1,6 @@
 package org.kpi.lab1.config;
 
-import org.kpi.lab1.service.ProductService;
+import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.kpi.lab1.service.mapper.ProductMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -15,7 +15,7 @@ public class MappersTestConfiguration {
     }
 
     @Bean
-    public ProductService productService() {
-        return Mappers.getMapper(ProductService.class);
+    public ProductServiceImplementation productService() {
+        return new ProductServiceImplementation();
     }
 }
