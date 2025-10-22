@@ -29,7 +29,6 @@ public class ProductServiceTest {
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
   private static final Category CATEGORY = Category.builder().id(1L).name("test category").build();
-  private static final Product DEFAULT_PRODUCT = buildProduct(ID);
 
   @Autowired
   private ProductServiceImplementation productService;
