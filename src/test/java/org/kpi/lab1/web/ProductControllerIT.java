@@ -1,6 +1,13 @@
 package org.kpi.lab1.web;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,14 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @WebMvcTest(ProductController.class)
 @AutoConfigureMockMvc
 @Import(MappersTestConfiguration.class)
@@ -39,19 +38,15 @@ public class ProductControllerIT {
   private static final String PRODUCT_DESCRIPTION = "Comet product";
   private static final Double PRODUCT_PRICE = 10.7;
   private static final CategoryDto PRODUCT_CATEGORY =
-          CategoryDto.builder().name("Comet products").build();
+      CategoryDto.builder().name("Comet products").build();
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-  @Autowired
-  private ProductDtoMapper productDtoMapper;
+  @Autowired private ProductDtoMapper productDtoMapper;
 
-  @MockitoBean
-  private ProductServiceImplementation productService;
+  @MockitoBean private ProductServiceImplementation productService;
 
   @BeforeEach
   void setUp() {
@@ -60,11 +55,11 @@ public class ProductControllerIT {
 
   private static ProductDto buildProductDto() {
     return ProductDto.builder()
-            .name(PRODUCT_NAME)
-            .description(PRODUCT_DESCRIPTION)
-            .price(PRODUCT_PRICE)
-            .category(PRODUCT_CATEGORY)
-            .build();
+        .name(PRODUCT_NAME)
+        .description(PRODUCT_DESCRIPTION)
+        .price(PRODUCT_PRICE)
+        .category(PRODUCT_CATEGORY)
+        .build();
   }
 
   @Test
@@ -73,17 +68,18 @@ public class ProductControllerIT {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
-    when(productService.addProduct(any(Product.class)))
-            .thenReturn(product);
+    when(productService.addProduct(any(Product.class))).thenReturn(product);
 
-    mockMvc.perform(post("/api/v1/products")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(productDto)))
-            .andExpect(status().is2xxSuccessful())
-            .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-            .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
-            .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+    mockMvc
+        .perform(
+            post("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productDto)))
+        .andExpect(status().is2xxSuccessful())
+        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
 
     verify(productService, times(1)).addProduct(any(Product.class));
   }
@@ -96,12 +92,12 @@ public class ProductControllerIT {
 
     when(productService.getAllProducts()).thenReturn(List.of(product));
 
-    mockMvc.perform(get("/api/v1/products")
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
-            .andExpect(jsonPath("$[0].description").value(PRODUCT_DESCRIPTION))
-            .andExpect(jsonPath("$[0].price").value(PRODUCT_PRICE));
+    mockMvc
+        .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
+        .andExpect(jsonPath("$[0].description").value(PRODUCT_DESCRIPTION))
+        .andExpect(jsonPath("$[0].price").value(PRODUCT_PRICE));
 
     verify(productService, times(1)).getAllProducts();
   }
@@ -114,12 +110,12 @@ public class ProductControllerIT {
 
     when(productService.getProductById(1L)).thenReturn(product);
 
-    mockMvc.perform(get("/api/v1/products/{id}", 1L)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-            .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
-            .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+    mockMvc
+        .perform(get("/api/v1/products/{id}", 1L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
 
     verify(productService, times(1)).getProductById(1L);
   }
@@ -127,26 +123,28 @@ public class ProductControllerIT {
   @Test
   @SneakyThrows
   void updateProduct() {
-    ProductDto updatedDto = ProductDto.builder()
+    ProductDto updatedDto =
+        ProductDto.builder()
             .name("Updated Comet product")
-            .description("Updated description")
+            .description("Updated star description")
             .price(30.0)
             .category(PRODUCT_CATEGORY)
             .build();
 
     Product updatedProduct = productDtoMapper.toProduct(updatedDto);
 
-    when(productService.updateProduct(eq(1L), any(Product.class)))
-            .thenReturn(updatedProduct);
+    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
 
-    mockMvc.perform(put("/api/v1/products/{id}", 1L)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(updatedDto)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name").value("Updated Comet product"))
-            .andExpect(jsonPath("$.description").value("Updated description"))
-            .andExpect(jsonPath("$.price").value(30.0));
+    mockMvc
+        .perform(
+            put("/api/v1/products/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedDto)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Updated Comet product"))
+        .andExpect(jsonPath("$.description").value("Updated star description"))
+        .andExpect(jsonPath("$.price").value(30.0));
 
     verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
   }
@@ -156,9 +154,60 @@ public class ProductControllerIT {
   void deleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
-    mockMvc.perform(delete("/api/v1/products/{id}", 1L))
-            .andExpect(status().isNoContent());
+    mockMvc.perform(delete("/api/v1/products/{id}", 1L)).andExpect(status().isNoContent());
 
     verify(productService, times(1)).deleteProduct(1L);
+  }
+
+  @Test
+  @SneakyThrows
+  @DisplayName("Create product with missing fields should return 400 Bad Request")
+  void createProduct_invalidData_returnsBadRequest() {
+    ProductDto invalidProduct =
+        ProductDto.builder()
+            .name("")
+            .description("Updated description")
+            .price(14.0)
+            .category(null)
+            .build();
+
+    mockMvc
+        .perform(
+            post("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidProduct)))
+        .andExpect(status().isBadRequest());
+
+    verify(productService, never()).addProduct(any(Product.class));
+  }
+
+  @Test
+  @SneakyThrows
+  @DisplayName("Get product by non-existent ID should return 404 Not Found")
+  void getProductById_notFound() {
+    when(productService.getProductById(99L)).thenReturn(null);
+
+    mockMvc
+        .perform(get("/api/v1/products/{id}", 99L).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+
+    verify(productService, times(1)).getProductById(99L);
+  }
+
+  @Test
+  @SneakyThrows
+  @DisplayName("Update non-existent product should return 404 Not Found")
+  void updateProduct_notFound() {
+    ProductDto updatedDto = buildProductDto();
+    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
+
+    mockMvc
+        .perform(
+            put("/api/v1/products/{id}", 999L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedDto)))
+        .andExpect(status().isNotFound());
+
+    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
   }
 }
