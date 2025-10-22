@@ -1,5 +1,14 @@
 package org.kpi.lab1.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.kpi.lab1.config.MappersTestConfiguration;
@@ -10,22 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 @SpringBootTest(classes = {ProductServiceImplementation.class})
 @Import(MappersTestConfiguration.class)
 @DisplayName("Product Service Tests")
 @TestMethodOrder(OrderAnnotation.class)
 public class ProductServiceTest {
-  private static final Long ID = 1L;
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
   private static final Category CATEGORY = Category.builder().id(1L).name("test category").build();
@@ -77,12 +75,8 @@ public class ProductServiceTest {
   @Order(4)
   @DisplayName("Should update existing product")
   public void testUpdateProduct() {
-    Product updatedProduct = Product.builder()
-            .id(99L)
-            .name("Updated product")
-            .price(55.5)
-            .category(CATEGORY)
-            .build();
+    Product updatedProduct =
+        Product.builder().id(99L).name("Updated product").price(55.5).category(CATEGORY).build();
 
     Product result = productService.updateProduct(99L, updatedProduct);
 

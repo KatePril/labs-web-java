@@ -1,14 +1,13 @@
 package org.kpi.lab1.service.implementation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.service.ProductService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service

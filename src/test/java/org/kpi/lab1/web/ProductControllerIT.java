@@ -40,13 +40,17 @@ public class ProductControllerIT {
   private static final CategoryDto PRODUCT_CATEGORY =
       CategoryDto.builder().name("Comet products").build();
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-  @Autowired private ProductDtoMapper productDtoMapper;
+  @Autowired
+  private ProductDtoMapper productDtoMapper;
 
-  @MockitoBean private ProductServiceImplementation productService;
+  @MockitoBean
+  private ProductServiceImplementation productService;
 
   @BeforeEach
   void setUp() {

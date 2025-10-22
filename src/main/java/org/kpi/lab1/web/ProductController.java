@@ -1,6 +1,7 @@
 package org.kpi.lab1.web;
 
 import jakarta.validation.Valid;
+import java.util.List;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.service.ProductService;
@@ -8,8 +9,6 @@ import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -32,9 +31,8 @@ public class ProductController {
 
   @GetMapping
   public ResponseEntity<List<ProductDto>> getAllProducts() {
-    List<ProductDto> dtos = productService.getAllProducts().stream()
-            .map(productDtoMapper::toProductDto)
-            .toList();
+    List<ProductDto> dtos =
+        productService.getAllProducts().stream().map(productDtoMapper::toProductDto).toList();
     return ResponseEntity.ok(dtos);
   }
 
@@ -49,7 +47,7 @@ public class ProductController {
 
   @PutMapping("/{id}")
   public ResponseEntity<ProductDto> updateProduct(
-          @PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
+      @PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
     Product updated = productService.updateProduct(id, productDtoMapper.toProduct(productDto));
     if (updated == null) {
       return ResponseEntity.notFound().build();

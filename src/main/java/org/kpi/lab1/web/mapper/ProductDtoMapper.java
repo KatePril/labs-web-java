@@ -11,26 +11,25 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface ProductDtoMapper {
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "price", source = "price")
-    @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
-    Product toProduct(ProductDto product);
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
+  Product toProduct(ProductDto product);
 
-    @Named("toCategory")
-    default Category toCategory(CategoryDto category) {
-        return null;
-    }
+  @Named("toCategory")
+  default Category toCategory(CategoryDto category) {
+    return null;
+  }
 
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "price", source = "price")
-    @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
-    ProductDto toProductDto(Product product);
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
+  ProductDto toProductDto(Product product);
 
-    @Named("toCategoryDto")
-    default CategoryDto toCategoryDto(Category category) {
-        return null;
-    }
-
+  @Named("toCategoryDto")
+  default CategoryDto toCategoryDto(Category category) {
+    return null;
+  }
 }
