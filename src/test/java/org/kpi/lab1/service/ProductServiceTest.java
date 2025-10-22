@@ -61,7 +61,7 @@ public class ProductServiceTest {
   @Test
   @Order(3)
   @DisplayName("Should add a new product")
-  public void shouldAddProduct() {
+  public void testAddProduct() {
     Product newProduct = buildProduct(99L);
 
     Product added = productService.addProduct(newProduct);
@@ -76,7 +76,7 @@ public class ProductServiceTest {
   @Test
   @Order(4)
   @DisplayName("Should update existing product")
-  public void shouldUpdateProduct() {
+  public void testUpdateProduct() {
     Product updatedProduct = Product.builder()
             .id(99L)
             .name("Updated product")
@@ -95,8 +95,8 @@ public class ProductServiceTest {
 
   @Test
   @Order(5)
-  @DisplayName("Should delete product by ID")
-  void shouldDeleteProduct() {
+  @DisplayName("test delete product by ID")
+  void testDeleteProduct() {
     productService.deleteProduct(99L);
 
     Product deleted = productService.getProductById(99L);
@@ -107,7 +107,7 @@ public class ProductServiceTest {
   @Test
   @Order(6)
   @DisplayName("Should handle deleting non-existent product gracefully")
-  void shouldHandleDeletingNonExistentProduct() {
+  void testHandleDeletingNonExistentProduct() {
     Assertions.assertDoesNotThrow(() -> productService.deleteProduct(1000L));
     assertNull(productService.getProductById(1000L));
   }

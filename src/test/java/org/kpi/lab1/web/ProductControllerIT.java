@@ -64,7 +64,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void createProduct() {
+  void testCreateProduct() {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
@@ -86,7 +86,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void getAllProducts() {
+  void testGetAllProducts() {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
@@ -104,7 +104,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void getProductById() {
+  void testGetProductById() {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
@@ -122,7 +122,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void updateProduct() {
+  void testUpdateProduct() {
     ProductDto updatedDto =
         ProductDto.builder()
             .name("Updated Comet product")
@@ -151,7 +151,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void deleteProduct() {
+  void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
     mockMvc.perform(delete("/api/v1/products/{id}", 1L)).andExpect(status().isNoContent());
@@ -161,7 +161,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void createProduct_invalidData_returnsBadRequest() {
+  void testCreateProduct_invalidData_returnsBadRequest() {
     ProductDto invalidProduct =
         ProductDto.builder()
             .name("")
@@ -182,7 +182,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void getProductById_notFound() {
+  void testGetProductById_notFound() {
     when(productService.getProductById(99L)).thenReturn(null);
 
     mockMvc
@@ -194,7 +194,7 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  void updateProduct_notFound() {
+  void testUpdateProduct_notFound() {
     ProductDto updatedDto = buildProductDto();
     when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
 
