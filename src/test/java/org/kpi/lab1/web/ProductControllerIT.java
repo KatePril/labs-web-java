@@ -161,7 +161,6 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  @DisplayName("Create product with missing fields should return 400 Bad Request")
   void createProduct_invalidData_returnsBadRequest() {
     ProductDto invalidProduct =
         ProductDto.builder()
@@ -183,7 +182,6 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  @DisplayName("Get product by non-existent ID should return 404 Not Found")
   void getProductById_notFound() {
     when(productService.getProductById(99L)).thenReturn(null);
 
@@ -196,7 +194,6 @@ public class ProductControllerIT {
 
   @Test
   @SneakyThrows
-  @DisplayName("Update non-existent product should return 404 Not Found")
   void updateProduct_notFound() {
     ProductDto updatedDto = buildProductDto();
     when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
