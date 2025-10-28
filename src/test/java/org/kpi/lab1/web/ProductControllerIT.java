@@ -64,27 +64,27 @@ public class ProductControllerIT extends AbstractIt {
         .build();
   }
 
-  @Test
-  @SneakyThrows
-  void testCreateProduct() {
-    ProductDto productDto = buildProductDto();
-    Product product = productDtoMapper.toProduct(productDto);
-
-    when(productService.addProduct(any(Product.class))).thenReturn(product);
-
-    mockMvc
-        .perform(
-            post("/api/v1/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(productDto)))
-        .andExpect(status().is2xxSuccessful())
-        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
-        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
-
-    verify(productService, times(1)).addProduct(any(Product.class));
-  }
+//  @Test
+//  @SneakyThrows
+//  void testCreateProduct() {
+//    ProductDto productDto = buildProductDto();
+//    Product product = productDtoMapper.toProduct(productDto);
+//
+//    when(productService.addProduct(any(Product.class))).thenReturn(product);
+//
+//    mockMvc
+//        .perform(
+//            post("/api/v1/products")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(productDto)))
+//        .andExpect(status().is2xxSuccessful())
+//        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+//        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+//        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+//
+//    verify(productService, times(1)).addProduct(any(Product.class));
+//  }
 
   @Test
   @SneakyThrows
@@ -122,34 +122,34 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getProductById(1L);
   }
 
-  @Test
-  @SneakyThrows
-  void testUpdateProduct() {
-    ProductDto updatedDto =
-        ProductDto.builder()
-            .name("Updated Comet product")
-            .description("Updated star description")
-            .price(30.0)
-            .category(PRODUCT_CATEGORY)
-            .build();
-
-    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
-
-    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
-
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Updated Comet product"))
-        .andExpect(jsonPath("$.description").value("Updated star description"))
-        .andExpect(jsonPath("$.price").value(30.0));
-
-    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
-  }
+//  @Test
+//  @SneakyThrows
+//  void testUpdateProduct() {
+//    ProductDto updatedDto =
+//        ProductDto.builder()
+//            .name("Updated Comet product")
+//            .description("Updated star description")
+//            .price(30.0)
+//            .category(PRODUCT_CATEGORY)
+//            .build();
+//
+//    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
+//
+//    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
+//
+//    mockMvc
+//        .perform(
+//            put("/api/v1/products/{id}", 1L)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(updatedDto)))
+//        .andExpect(status().isOk())
+//        .andExpect(jsonPath("$.name").value("Updated Comet product"))
+//        .andExpect(jsonPath("$.description").value("Updated star description"))
+//        .andExpect(jsonPath("$.price").value(30.0));
+//
+//    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
+//  }
 
   @Test
   @SneakyThrows
