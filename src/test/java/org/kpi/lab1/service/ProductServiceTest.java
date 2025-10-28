@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Import;
 public class ProductServiceTest {
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
+  private static final double PRODUCT_RATING = 4.9;
   private static final Category CATEGORY = Category.builder().id(1L).name("test category").build();
 
   @MockBean
@@ -119,6 +120,7 @@ public class ProductServiceTest {
         .id(id)
         .name(PRODUCT_NAME)
         .price(PRODUCT_PRICE)
+        .rating(PRODUCT_RATING)
         .category(CATEGORY)
         .build();
   }
