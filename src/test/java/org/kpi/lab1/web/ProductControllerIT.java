@@ -166,7 +166,7 @@ public class ProductControllerIT extends AbstractIt {
   void testCreateProduct_invalidData_returnsBadRequest() {
     ProductDto invalidProduct =
         ProductDto.builder()
-            .name("")
+            .name("Product")
             .description("Updated description")
             .price(14.0)
             .category(null)
@@ -178,7 +178,7 @@ public class ProductControllerIT extends AbstractIt {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error").value(ValidDescription.INVALID_DESCRIPTION)).andDo(print());
+        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
 
     verify(productService, never()).addProduct(any(Product.class));
   }
