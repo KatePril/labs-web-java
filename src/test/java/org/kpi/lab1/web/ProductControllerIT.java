@@ -17,6 +17,7 @@ import org.kpi.lab1.AbstractIt;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
+import org.kpi.lab1.dto.validation.ValidDescription;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +176,8 @@ public class ProductControllerIT extends AbstractIt {
             post("/api/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value(ValidDescription.INVALID_DESCRIPTION));
 
     verify(productService, never()).addProduct(any(Product.class));
   }
