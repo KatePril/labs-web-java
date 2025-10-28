@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -177,7 +178,7 @@ public class ProductControllerIT extends AbstractIt {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
         .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value(ValidDescription.INVALID_DESCRIPTION));
+        .andExpect(jsonPath("$.error").value(ValidDescription.INVALID_DESCRIPTION)).andDo(print());
 
     verify(productService, never()).addProduct(any(Product.class));
   }
