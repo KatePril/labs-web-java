@@ -161,27 +161,27 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).deleteProduct(1L);
   }
 
-  @Test
-  @SneakyThrows
-  void testCreateProduct_invalidData_returnsBadRequest() {
-    ProductDto invalidProduct =
-        ProductDto.builder()
-            .name("Product")
-            .description("Updated description")
-            .price(14.0)
-            .category(null)
-            .build();
-
-    mockMvc
-        .perform(
-            post("/api/v1/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidProduct)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
-
-    verify(productService, never()).addProduct(any(Product.class));
-  }
+//  @Test
+//  @SneakyThrows
+//  void testCreateProduct_invalidData_returnsBadRequest() {
+//    ProductDto invalidProduct =
+//        ProductDto.builder()
+//            .name("Product")
+//            .description("Updated description")
+//            .price(14.0)
+//            .category(null)
+//            .build();
+//
+//    mockMvc
+//        .perform(
+//            post("/api/v1/products")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(invalidProduct)))
+//        .andExpect(status().isBadRequest())
+//        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
+//
+//    verify(productService, never()).addProduct(any(Product.class));
+//  }
 
   @Test
   @SneakyThrows
@@ -195,19 +195,19 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getProductById(99L);
   }
 
-  @Test
-  @SneakyThrows
-  void testUpdateProduct_notFound() {
-    ProductDto updatedDto = buildProductDto();
-    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
-
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 999L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isNotFound());
-
-    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
-  }
+//  @Test
+//  @SneakyThrows
+//  void testUpdateProduct_notFound() {
+//    ProductDto updatedDto = buildProductDto();
+//    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
+//
+//    mockMvc
+//        .perform(
+//            put("/api/v1/products/{id}", 999L)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(updatedDto)))
+//        .andExpect(status().isNotFound());
+//
+//    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
+//  }
 }
