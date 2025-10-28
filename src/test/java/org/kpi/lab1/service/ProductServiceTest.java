@@ -85,7 +85,7 @@ public class ProductServiceTest {
   public void testUpdateProduct() {
     when(rateService.getProductById(99L)).thenReturn(4.9);
     Product updatedProduct =
-        Product.builder().id(99L).name("Updated product").price(55.5).category(CATEGORY).build();
+        Product.builder().id(99L).name("Updated product").price(55.5).rating(4.9).category(CATEGORY).build();
 
     Product result = productService.updateProduct(99L, updatedProduct);
 

@@ -89,6 +89,7 @@ public class ProductServiceImplementation implements ProductService {
             .name("Book")
             .description("An interesting galaxy one")
             .price(10.4)
+            .rating(4.5)
             .category(category)
             .build());
     products.put(
@@ -98,10 +99,11 @@ public class ProductServiceImplementation implements ProductService {
             .name("T-shirt")
             .description("A comfortable star shirt")
             .price(16.2)
+            .rating(3.5)
             .category(category1)
             .build());
     products.put(
-        3L, Product.builder().id(3L).name("Comet pencil").price(5.3).category(category).build());
+        3L, Product.builder().id(3L).name("Comet pencil").price(5.3).rating(5.0).category(category).build());
     return products;
   }
   ;
