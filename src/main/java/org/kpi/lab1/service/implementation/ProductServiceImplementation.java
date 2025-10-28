@@ -38,7 +38,7 @@ public class ProductServiceImplementation implements ProductService {
               .name(product.getName())
               .description(product.getDescription())
               .price(product.getPrice())
-              .rating(product.getRating())
+              .rating(rateService.getProductById(newId))
               .category(product.getCategory())
               .build();
     } else {
@@ -47,7 +47,7 @@ public class ProductServiceImplementation implements ProductService {
               .name(product.getName())
               .description(product.getDescription())
               .price(product.getPrice())
-              .rating(product.getRating())
+              .rating(rateService.getProductById(product.getId()))
               .category(product.getCategory())
               .build();
     }
@@ -57,6 +57,14 @@ public class ProductServiceImplementation implements ProductService {
 
   @Override
   public Product updateProduct(Long id, Product product) {
+    product = Product.builder()
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .rating(rateService.getProductById(product.getId()))
+            .category(product.getCategory())
+            .build();
     products.put(id, product);
     return product;
   }
