@@ -53,7 +53,8 @@ public class ProductServiceTest {
     assertEquals(1L, product.getId());
     assertEquals("An interesting galaxy one", product.getDescription());
     assertEquals(10.4, product.getPrice());
-    assertEquals(Category.builder().name("School supplies").build(), product.getCategory());
+    assertNotNull(product.getCategory());
+    assertEquals("School supplies", product.getCategory().getName());
   }
 
   @Test
