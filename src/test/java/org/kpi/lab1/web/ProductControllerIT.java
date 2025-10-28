@@ -1,14 +1,20 @@
 package org.kpi.lab1.web;
 
+import static com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+
+import com.github.tomakehurst.wiremock.client.WireMock;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +26,7 @@ import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.dto.validation.ValidDescription;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
+import org.kpi.lab1.service.implementation.RateServiceImplementation;
 import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,6 +57,9 @@ public class ProductControllerIT extends AbstractIt {
   @MockitoBean
   private ProductServiceImplementation productService;
 
+  @MockitoBean
+  private RateServiceImplementation rateService;
+
   @BeforeEach
   void setUp() {
     reset(productService);
@@ -64,27 +74,31 @@ public class ProductControllerIT extends AbstractIt {
         .build();
   }
 
-//  @Test
-//  @SneakyThrows
-//  void testCreateProduct() {
-//    ProductDto productDto = buildProductDto();
-//    Product product = productDtoMapper.toProduct(productDto);
-//
-//    when(productService.addProduct(any(Product.class))).thenReturn(product);
-//
-//    mockMvc
-//        .perform(
-//            post("/api/v1/products")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(productDto)))
-//        .andExpect(status().is2xxSuccessful())
-//        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
-//        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
-//        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
-//
-//    verify(productService, times(1)).addProduct(any(Product.class));
-//  }
+  @Test
+  @SneakyThrows
+  void testCreateProduct() {
+    ProductDto productDto = buildProductDto();
+    Product product = productDtoMapper.toProduct(productDto);
+
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
+    when(productService.addProduct(any(Product.class))).thenReturn(product);
+
+    mockMvc
+        .perform(
+            post("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(productDto)))
+        .andExpect(status().is2xxSuccessful())
+        .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
+        .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
+        .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
+
+    verify(productService, times(1)).addProduct(any(Product.class));
+  }
 
   @Test
   @SneakyThrows
@@ -92,6 +106,10 @@ public class ProductControllerIT extends AbstractIt {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getAllProducts()).thenReturn(List.of(product));
 
     mockMvc
@@ -110,6 +128,10 @@ public class ProductControllerIT extends AbstractIt {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getProductById(1L)).thenReturn(product);
 
     mockMvc
@@ -122,34 +144,38 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getProductById(1L);
   }
 
-//  @Test
-//  @SneakyThrows
-//  void testUpdateProduct() {
-//    ProductDto updatedDto =
-//        ProductDto.builder()
-//            .name("Updated Comet product")
-//            .description("Updated star description")
-//            .price(30.0)
-//            .category(PRODUCT_CATEGORY)
-//            .build();
-//
-//    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
-//
-//    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
-//
-//    mockMvc
-//        .perform(
-//            put("/api/v1/products/{id}", 1L)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(updatedDto)))
-//        .andExpect(status().isOk())
-//        .andExpect(jsonPath("$.name").value("Updated Comet product"))
-//        .andExpect(jsonPath("$.description").value("Updated star description"))
-//        .andExpect(jsonPath("$.price").value(30.0));
-//
-//    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
-//  }
+  @Test
+  @SneakyThrows
+  void testUpdateProduct() {
+    ProductDto updatedDto =
+        ProductDto.builder()
+            .name("Updated Comet product")
+            .description("Updated star description")
+            .price(30.0)
+            .category(PRODUCT_CATEGORY)
+            .build();
+
+    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
+
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
+    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
+
+    mockMvc
+        .perform(
+            put("/api/v1/products/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedDto)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("Updated Comet product"))
+        .andExpect(jsonPath("$.description").value("Updated star description"))
+        .andExpect(jsonPath("$.price").value(30.0));
+
+    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
+  }
 
   @Test
   @SneakyThrows
@@ -161,31 +187,39 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).deleteProduct(1L);
   }
 
-//  @Test
-//  @SneakyThrows
-//  void testCreateProduct_invalidData_returnsBadRequest() {
-//    ProductDto invalidProduct =
-//        ProductDto.builder()
-//            .name("Product")
-//            .description("Updated description")
-//            .price(14.0)
-//            .category(null)
-//            .build();
-//
-//    mockMvc
-//        .perform(
-//            post("/api/v1/products")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(invalidProduct)))
-//        .andExpect(status().isBadRequest())
-//        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
-//
-//    verify(productService, never()).addProduct(any(Product.class));
-//  }
+  @Test
+  @SneakyThrows
+  void testCreateProduct_invalidData_returnsBadRequest() {
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
+    ProductDto invalidProduct =
+        ProductDto.builder()
+            .name("Product")
+            .description("Updated description")
+            .price(14.0)
+            .category(null)
+            .build();
+
+    mockMvc
+        .perform(
+            post("/api/v1/products")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidProduct)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
+
+    verify(productService, never()).addProduct(any(Product.class));
+  }
 
   @Test
   @SneakyThrows
   void testGetProductById_notFound() {
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getProductById(99L)).thenReturn(null);
 
     mockMvc
@@ -195,19 +229,24 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getProductById(99L);
   }
 
-//  @Test
-//  @SneakyThrows
-//  void testUpdateProduct_notFound() {
-//    ProductDto updatedDto = buildProductDto();
-//    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
-//
-//    mockMvc
-//        .perform(
-//            put("/api/v1/products/{id}", 999L)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(updatedDto)))
-//        .andExpect(status().isNotFound());
-//
-//    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
-//  }
+  @Test
+  @SneakyThrows
+  void testUpdateProduct_notFound() {
+    ProductDto updatedDto = buildProductDto();
+
+    stubFor(WireMock.post("/rating-service/v1/ratings")
+            .willReturn(aResponse().withStatus(200)
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .withBody(objectMapper.writeValueAsBytes(5.0))));
+    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
+
+    mockMvc
+        .perform(
+            put("/api/v1/products/{id}", 999L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedDto)))
+        .andExpect(status().isNotFound());
+
+    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
+  }
 }
