@@ -154,6 +154,7 @@ public class ProductControllerIT extends AbstractIt {
             .name("Updated Comet product")
             .description("Updated star description")
             .price(30.0)
+            .rating(PRODUCT_RATING)
             .category(PRODUCT_CATEGORY)
             .build();
 
@@ -201,6 +202,7 @@ public class ProductControllerIT extends AbstractIt {
             .name("Product")
             .description("Updated description")
             .price(14.0)
+            .rating(PRODUCT_RATING)
             .category(null)
             .build();
 
