@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.kpi.lab1.config.MappersTestConfiguration;
+import org.kpi.lab1.AbstractIt;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
@@ -21,18 +21,14 @@ import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(ProductController.class)
 @AutoConfigureMockMvc
-@Import(MappersTestConfiguration.class)
 @DisplayName("Product Controller Integration Tests (with Mapper)")
 @Tag("product-service")
-public class ProductControllerIT {
+public class ProductControllerIT extends AbstractIt {
 
   private static final String PRODUCT_NAME = "Comet product";
   private static final String PRODUCT_DESCRIPTION = "Comet product";

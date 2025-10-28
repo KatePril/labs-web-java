@@ -106,7 +106,7 @@ public class ProductServiceTest {
     assertNull(productService.getProductById(1000L));
   }
 
-  private static Product buildProduct(Long id) {
+  private Product buildProduct(Long id) {
     return Product.builder()
         .id(id)
         .name(PRODUCT_NAME)
