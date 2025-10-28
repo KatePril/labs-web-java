@@ -42,6 +42,7 @@ public class ProductControllerIT extends AbstractIt {
   private static final String PRODUCT_NAME = "Comet product";
   private static final String PRODUCT_DESCRIPTION = "Comet product";
   private static final Double PRODUCT_PRICE = 10.7;
+  private static final double PRODUCT_RATING = 5.0;
   private static final CategoryDto PRODUCT_CATEGORY =
       CategoryDto.builder().name("Comet products").build();
 
@@ -70,6 +71,7 @@ public class ProductControllerIT extends AbstractIt {
         .name(PRODUCT_NAME)
         .description(PRODUCT_DESCRIPTION)
         .price(PRODUCT_PRICE)
+        .rating(PRODUCT_RATING)
         .category(PRODUCT_CATEGORY)
         .build();
   }
