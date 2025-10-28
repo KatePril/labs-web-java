@@ -11,5 +11,6 @@ public class Product {
   String name;
   String description;
   Double price;
+  Double rating;
   Category category;
 }

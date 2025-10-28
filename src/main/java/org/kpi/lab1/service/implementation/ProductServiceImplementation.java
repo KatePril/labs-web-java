@@ -3,15 +3,20 @@ package org.kpi.lab1.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.service.ProductService;
+import org.kpi.lab1.service.RateService;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImplementation implements ProductService {
+  private final RateService rateService;
   private final ConcurrentHashMap<Long, Product> products = buildProductsMock();
 
   @Override
@@ -33,6 +38,16 @@ public class ProductServiceImplementation implements ProductService {
               .name(product.getName())
               .description(product.getDescription())
               .price(product.getPrice())
+              .rating(product.getRating())
+              .category(product.getCategory())
+              .build();
+    } else {
+      product = Product.builder()
+              .id(product.getId())
+              .name(product.getName())
+              .description(product.getDescription())
+              .price(product.getPrice())
+              .rating(product.getRating())
               .category(product.getCategory())
               .build();
     }

@@ -14,6 +14,7 @@ public interface ProductDtoMapper {
   @Mapping(target = "name", source = "name")
   @Mapping(target = "description", source = "description")
   @Mapping(target = "price", source = "price")
+  @Mapping(target = "rating", source = "rating")
   @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
   Product toProduct(ProductDto product);
 
@@ -25,6 +26,7 @@ public interface ProductDtoMapper {
   @Mapping(target = "name", source = "name")
   @Mapping(target = "description", source = "description")
   @Mapping(target = "price", source = "price")
+  @Mapping(target = "rating", source = "rating")
   @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
   ProductDto toProductDto(Product product);
 
