@@ -11,7 +11,7 @@ public class FeatureToggleService {
     private final ConcurrentHashMap<String, Boolean> featureToggleMap;
 
     public FeatureToggleService(FeatureToggleProperties featureToggleProperties) {
-        featureToggleMap = new ConcurrentHashMap<>();
+        featureToggleMap = new ConcurrentHashMap<>(featureToggleProperties.getToggles());
     }
 
     public boolean checkFeatureToggle(String featureName) {

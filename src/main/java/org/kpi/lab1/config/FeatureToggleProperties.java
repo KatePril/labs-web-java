@@ -12,9 +12,9 @@ import java.util.Map;
 @Configuration
 @ConfigurationProperties(prefix = "application.feature")
 public class FeatureToggleProperties {
-    Map<String, Boolean> featuresMap;
+    Map<String, Boolean> toggles;
 
     public boolean isEnabled(String feature) {
-        return  featuresMap.getOrDefault(feature, false);
+        return toggles != null && toggles.getOrDefault(feature, false);
     }
 }
