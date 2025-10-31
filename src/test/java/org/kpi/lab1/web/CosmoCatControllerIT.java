@@ -26,13 +26,13 @@ public class CosmoCatControllerIT extends AbstractIt {
     @SneakyThrows
     @DisabledFeatureToggle(FeatureToggles.COSMO_CATS)
     void testDisabledFeatureToggle() {
-        mockMvc.perform(get("/api/v1/products")).andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/v1/cats")).andExpect(status().isNotFound());
     }
 
     @Test
     @SneakyThrows
     @EnabledFeatureToggle(FeatureToggles.COSMO_CATS)
     void testEnabledFeatureToggle() {
-        mockMvc.perform(get("/api/v1/products")).andExpect(status().isOk());
+        mockMvc.perform(get("/api/v1/cats")).andExpect(status().isOk());
     }
 }
