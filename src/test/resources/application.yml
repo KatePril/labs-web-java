@@ -5,8 +5,8 @@ spring:
 application:
   feature:
     toggles:
-      customer-greeting: false
-      feature: false
+      cosmo-cats: false
+      kitty-products: false
 
 tests:
   unit-tests:
