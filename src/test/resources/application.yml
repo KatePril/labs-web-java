@@ -1,4 +1,13 @@
-feature:
-  toggles:
-    customer-greeting: false
-    feature: false
+spring:
+  application:
+    name: space-cats-market
+
+application:
+  feature:
+    toggles:
+      customer-greeting: false
+      feature: false
+
+tests:
+  unit-tests:
+    enabled: true
