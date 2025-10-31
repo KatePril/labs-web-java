@@ -1,0 +1,4 @@
+feature:
+  toggles:
+    customer-greeting: false
+    feature: false
