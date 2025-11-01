@@ -38,7 +38,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
   @ExceptionHandler(DisabledFeatureToggleException.class)
   ProblemDetail handleDisabledFeatureToggleException(DisabledFeatureToggleException ex) {
     log.info("Disabled feature exception was not raised");
-    ProblemDetail problemDetail = forStatusAndDetail(NOT_FOUND, ex.getMessage());
+    ProblemDetail problemDetail = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
     problemDetail.setType(URI.create("feature-toggle-disabled"));
     problemDetail.setTitle("Feature is disabled");
     return problemDetail;
