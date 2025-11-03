@@ -8,21 +8,21 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class FeatureToggleService {
 
-    private final ConcurrentHashMap<String, Boolean> featureToggleMap;
+  private final ConcurrentHashMap<String, Boolean> featureToggleMap;
 
-    public FeatureToggleService(FeatureToggleProperties featureToggleProperties) {
-        featureToggleMap = new ConcurrentHashMap<>(featureToggleProperties.getToggles());
-    }
+  public FeatureToggleService(FeatureToggleProperties featureToggleProperties) {
+    featureToggleMap = new ConcurrentHashMap<>(featureToggleProperties.getToggles());
+  }
 
-    public boolean checkFeatureToggle(String featureName) {
-        return featureToggleMap.getOrDefault(featureName, false);
-    }
+  public boolean checkFeatureToggle(String featureName) {
+    return featureToggleMap.getOrDefault(featureName, false);
+  }
 
-    public void enableFeatureToggle(String featureName) {
-        featureToggleMap.put(featureName, true);
-    }
+  public void enableFeatureToggle(String featureName) {
+    featureToggleMap.put(featureName, true);
+  }
 
-    public void disableFeatureToggle(String featureName) {
-        featureToggleMap.put(featureName, false);
-    }
+  public void disableFeatureToggle(String featureName) {
+    featureToggleMap.put(featureName, false);
+  }
 }

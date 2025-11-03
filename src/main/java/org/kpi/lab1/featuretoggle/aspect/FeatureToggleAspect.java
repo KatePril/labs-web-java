@@ -16,15 +16,15 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class FeatureToggleAspect {
-    private final FeatureToggleService featureToggleService;
+  private final FeatureToggleService featureToggleService;
 
-    @Before("@annotation(featureToggle)")
-    public void checkFeatureToggle(JoinPoint joinPoint, FeatureToggle featureToggle) {
-        FeatureToggles toggle = featureToggle.value();
-        if (!featureToggleService.checkFeatureToggle(toggle.getFeatureName())) {
-            log.warn("Feature toggle {} is disabled", toggle.getFeatureName());
-            throw new DisabledFeatureToggleException(toggle.getFeatureName());
-        }
-        log.debug("Feature toggle {} is enabled", toggle.getFeatureName());
+  @Before("@annotation(featureToggle)")
+  public void checkFeatureToggle(JoinPoint joinPoint, FeatureToggle featureToggle) {
+    FeatureToggles toggle = featureToggle.value();
+    if (!featureToggleService.checkFeatureToggle(toggle.getFeatureName())) {
+      log.warn("Feature toggle {} is disabled", toggle.getFeatureName());
+      throw new DisabledFeatureToggleException(toggle.getFeatureName());
     }
+    log.debug("Feature toggle {} is enabled", toggle.getFeatureName());
+  }
 }

@@ -19,20 +19,19 @@ import org.springframework.test.web.servlet.MockMvc;
 @DisplayName("Cosmo Cat Controller IT")
 @ExtendWith(FeatureToggleExtension.class)
 public class CosmoCatControllerIT extends AbstractIt {
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Test
-    @SneakyThrows
-    @DisabledFeatureToggle(FeatureToggles.COSMO_CATS)
-    void testDisabledFeatureToggle() {
-        mockMvc.perform(get("/api/v1/cats")).andExpect(status().isBadRequest());
-    }
+  @Test
+  @SneakyThrows
+  @DisabledFeatureToggle(FeatureToggles.COSMO_CATS)
+  void testDisabledFeatureToggle() {
+    mockMvc.perform(get("/api/v1/cats")).andExpect(status().isBadRequest());
+  }
 
-    @Test
-    @SneakyThrows
-    @EnabledFeatureToggle(FeatureToggles.COSMO_CATS)
-    void testEnabledFeatureToggle() {
-        mockMvc.perform(get("/api/v1/cats")).andExpect(status().isOk());
-    }
+  @Test
+  @SneakyThrows
+  @EnabledFeatureToggle(FeatureToggles.COSMO_CATS)
+  void testEnabledFeatureToggle() {
+    mockMvc.perform(get("/api/v1/cats")).andExpect(status().isOk());
+  }
 }
