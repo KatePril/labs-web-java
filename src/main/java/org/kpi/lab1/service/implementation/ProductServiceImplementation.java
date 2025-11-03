@@ -3,13 +3,13 @@ package org.kpi.lab1.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.service.ProductService;
 import org.kpi.lab1.service.RateService;
+import org.kpi.lab1.service.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductServiceImplementation implements ProductService {
   private final RateService rateService;
+  private final ProductMapper productMapper;
   private final ConcurrentHashMap<Long, Product> products = buildProductsMock();
 
   @Override
@@ -31,33 +32,17 @@ public class ProductServiceImplementation implements ProductService {
 
   @Override
   public Product addProduct(Product product) {
-    if (product.getId() == null) {
-      long newId = products.size() + 1L;
-      product = Product.builder()
-              .id(newId)
-              .name(product.getName())
-              .description(product.getDescription())
-              .price(product.getPrice())
-              .rating(rateService.getProductById(newId))
-              .category(product.getCategory())
-              .build();
-    } else {
-      product = Product.builder()
-              .id(product.getId())
-              .name(product.getName())
-              .description(product.getDescription())
-              .price(product.getPrice())
-              .rating(rateService.getProductById(product.getId()))
-              .category(product.getCategory())
-              .build();
-    }
-    products.put(product.getId(), product);
-    return product;
+    long newId = products.size() + 1L;
+    double rating = rateService.getProductById(product.getId() == null ? newId : product.getId());
+    Product mappedProduct = productMapper.toProduct(product, newId, rating);
+    products.put(mappedProduct.getId(), mappedProduct);
+    return mappedProduct;
   }
 
   @Override
   public Product updateProduct(Long id, Product product) {
-    product = Product.builder()
+    product =
+        Product.builder()
             .id(product.getId())
             .name(product.getName())
             .description(product.getDescription())
@@ -103,7 +88,14 @@ public class ProductServiceImplementation implements ProductService {
             .category(category1)
             .build());
     products.put(
-        3L, Product.builder().id(3L).name("Comet pencil").price(5.3).rating(5.0).category(category).build());
+        3L,
+        Product.builder()
+            .id(3L)
+            .name("Comet pencil")
+            .price(5.3)
+            .rating(5.0)
+            .category(category)
+            .build());
     return products;
   }
   ;
