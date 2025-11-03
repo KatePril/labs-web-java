@@ -30,4 +30,16 @@ public interface ProductMapper {
   default CategoryDto toCategoryDto(Category category) {
     return null;
   }
+
+  default Product toProduct(Product product, long newId, double rating) {
+    Long id = product.getId() == null ? newId : product.getId();
+    return Product.builder()
+        .id(id)
+        .name(product.getName())
+        .description(product.getDescription())
+        .price(product.getPrice())
+        .rating(rating)
+        .category(product.getCategory())
+        .build();
+  }
 }
