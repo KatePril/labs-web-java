@@ -1,6 +1,7 @@
 package org.kpi.lab1.web;
 
 import lombok.extern.slf4j.Slf4j;
+import org.kpi.lab1.featuretoggle.exception.DisabledFeatureToggleException;
 import org.kpi.lab1.web.exception.ParamsViolationDetails;
 import org.kpi.lab1.web.exception.ProductNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,15 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     ProblemDetail problemDetail = forStatusAndDetail(NOT_FOUND, ex.getMessage());
     problemDetail.setType(URI.create("product-not-found"));
     problemDetail.setTitle("Product not found");
+    return problemDetail;
+  }
+
+  @ExceptionHandler(DisabledFeatureToggleException.class)
+  ProblemDetail handleDisabledFeatureToggleException(DisabledFeatureToggleException ex) {
+    log.info("Disabled feature exception was not raised");
+    ProblemDetail problemDetail = forStatusAndDetail(BAD_REQUEST, ex.getMessage());
+    problemDetail.setType(URI.create("feature-toggle-disabled"));
+    problemDetail.setTitle("Feature is disabled");
     return problemDetail;
   }
 

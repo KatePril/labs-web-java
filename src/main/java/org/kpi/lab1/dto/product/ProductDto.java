@@ -27,5 +27,8 @@ public class ProductDto {
   @NotNull(message = "Price cannot be null")
   Double price;
 
+  @NotNull(message = "Rating cannot be null")
+  Double rating;
+
   CategoryDto category;
 }
