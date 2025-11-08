@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 public class FeatureToggleExtension implements BeforeEachCallback, AfterEachCallback {
+  private final String BASE_FEATURE_NAME = "application.feature.toggles.";
 
   @Override
   public void beforeEach(ExtensionContext context) {
@@ -61,8 +62,7 @@ public class FeatureToggleExtension implements BeforeEachCallback, AfterEachCall
 
   private boolean getFeatureNamePropertyAsBoolean(ExtensionContext context, String featureName) {
     Environment environment = SpringExtension.getApplicationContext(context).getEnvironment();
-    return environment.getProperty(
-        "application.feature.toggles." + featureName, Boolean.class, Boolean.FALSE);
+    return environment.getProperty(BASE_FEATURE_NAME + featureName, Boolean.class, Boolean.FALSE);
   }
 
   private FeatureToggleService getFeatureToggleService(ExtensionContext context) {
