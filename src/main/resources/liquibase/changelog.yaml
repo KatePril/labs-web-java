@@ -1,3 +1,7 @@
 databaseChangeLog:
   - include:
       file: liquibase/db.changelog-init.yaml
+  - include:
+      file: liquibase/db.changelog-init-product-item.yaml
+  - include:
+      file: liquibase/db.changelog-init-order.yaml
