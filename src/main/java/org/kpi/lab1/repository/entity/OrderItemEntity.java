@@ -23,5 +23,7 @@ public class OrderItemEntity {
 
     @ManyToMany
     List<ProductItemEntity> items;
+
+    @Column(nullable = false)
     Double total;
 }

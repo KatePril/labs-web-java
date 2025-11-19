@@ -57,12 +57,12 @@ databaseChangeLog:
                   nullable: true
             - column:
                 name: price
-                type: DOUBLE
+                type: DECIMAL(10,2)
                 constraints:
                   nullable: false
             - column:
                 name: rating
-                type: DOUBLE
+                type: DECIMAL(10,2)
                 constraints:
                   nullable: true
             - column:

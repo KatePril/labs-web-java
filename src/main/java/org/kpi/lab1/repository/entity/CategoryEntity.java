@@ -18,6 +18,8 @@ public class CategoryEntity {
     @SequenceGenerator(name = "category_id_seq", sequenceName = "category_id_seq")
     Long id;
 
+    @Column(nullable = false, unique = true)
     String name;
+
     String description;
 }
