@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "order")
-public class OrderItemEntity {
+public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_seq")
     @SequenceGenerator(name = "order_id_seq", sequenceName = "order_id_seq")
