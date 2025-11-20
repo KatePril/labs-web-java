@@ -24,8 +24,7 @@ public class ProductController {
 
   @PostMapping
   public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody ProductDto productDto) {
-    Product product = productDtoMapper.toProduct(productDto);
-    Product created = productService.addProduct(product);
+    Product created = productService.addProduct(productDto);
     return new ResponseEntity<>(productDtoMapper.toProductDto(created), HttpStatus.CREATED);
   }
 
@@ -43,16 +42,6 @@ public class ProductController {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(productDtoMapper.toProductDto(product));
-  }
-
-  @PutMapping("/{id}")
-  public ResponseEntity<ProductDto> updateProduct(
-      @PathVariable Long id, @Valid @RequestBody ProductDto productDto) {
-    Product updated = productService.updateProduct(id, productDtoMapper.toProduct(productDto));
-    if (updated == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok(productDtoMapper.toProductDto(updated));
   }
 
   @DeleteMapping("/{id}")

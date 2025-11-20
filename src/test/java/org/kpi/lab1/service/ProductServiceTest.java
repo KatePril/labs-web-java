@@ -15,6 +15,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.kpi.lab1.config.MappersTestConfiguration;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
+import org.kpi.lab1.dto.category.CategoryDto;
+import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,36 +70,19 @@ public class ProductServiceTest {
   @DisplayName("Should add a new product")
   public void testAddProduct() {
     when(rateService.getProductById(99L)).thenReturn(4.9);
-    Product newProduct = buildProduct(99L);
+    ProductDto newProduct = buildProductDto(99L);
 
     Product added = productService.addProduct(newProduct);
     assertEquals(newProduct, added);
 
     Product fetched = productService.getProductById(99L);
     assertNotNull(fetched);
-    assertEquals(newProduct, fetched);
+    assertEquals(buildProduct(99L), fetched);
     assertEquals(4, productService.getAllProducts().size());
   }
 
   @Test
   @Order(4)
-  @DisplayName("Should update existing product")
-  public void testUpdateProduct() {
-    when(rateService.getProductById(99L)).thenReturn(4.9);
-    Product updatedProduct =
-        Product.builder().id(99L).name("Updated product").price(55.5).rating(4.9).category(CATEGORY).build();
-
-    Product result = productService.updateProduct(99L, updatedProduct);
-
-    assertEquals(updatedProduct, result);
-    Product fetched = productService.getProductById(99L);
-    assertNotNull(fetched);
-    assertEquals("Updated product", fetched.getName());
-    assertEquals(55.5, fetched.getPrice());
-  }
-
-  @Test
-  @Order(5)
   @DisplayName("test delete product by ID")
   void testDeleteProduct() {
     productService.deleteProduct(99L);
@@ -108,7 +93,7 @@ public class ProductServiceTest {
   }
 
   @Test
-  @Order(6)
+  @Order(5)
   @DisplayName("Should handle deleting non-existent product gracefully")
   void testHandleDeletingNonExistentProduct() {
     Assertions.assertDoesNotThrow(() -> productService.deleteProduct(1000L));
@@ -122,6 +107,15 @@ public class ProductServiceTest {
         .price(PRODUCT_PRICE)
         .rating(PRODUCT_RATING)
         .category(CATEGORY)
+        .build();
+  }
+
+  private ProductDto buildProductDto(Long id) {
+    return ProductDto.builder()
+        .name(PRODUCT_NAME)
+        .price(PRODUCT_PRICE)
+        .rating(PRODUCT_RATING)
+        .category(CategoryDto.builder().name(CATEGORY.getName()).build())
         .build();
   }
 }

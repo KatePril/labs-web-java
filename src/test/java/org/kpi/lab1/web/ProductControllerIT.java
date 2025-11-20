@@ -86,7 +86,7 @@ public class ProductControllerIT extends AbstractIt {
             .willReturn(aResponse().withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.addProduct(any(Product.class))).thenReturn(product);
+    when(productService.addProduct(any(ProductDto.class))).thenReturn(product);
 
     mockMvc
         .perform(
@@ -99,7 +99,7 @@ public class ProductControllerIT extends AbstractIt {
         .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
         .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
 
-    verify(productService, times(1)).addProduct(any(Product.class));
+    verify(productService, times(1)).addProduct(any(ProductDto.class));
   }
 
   @Test
@@ -148,40 +148,6 @@ public class ProductControllerIT extends AbstractIt {
 
   @Test
   @SneakyThrows
-  void testUpdateProduct() {
-    ProductDto updatedDto =
-        ProductDto.builder()
-            .name("Updated Comet product")
-            .description("Updated star description")
-            .price(30.0)
-            .rating(PRODUCT_RATING)
-            .category(PRODUCT_CATEGORY)
-            .build();
-
-    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
-
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
-
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Updated Comet product"))
-        .andExpect(jsonPath("$.description").value("Updated star description"))
-        .andExpect(jsonPath("$.price").value(30.0));
-
-    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
-  }
-
-  @Test
-  @SneakyThrows
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
@@ -214,7 +180,7 @@ public class ProductControllerIT extends AbstractIt {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
 
-    verify(productService, never()).addProduct(any(Product.class));
+    verify(productService, never()).addProduct(any(ProductDto.class));
   }
 
   @Test

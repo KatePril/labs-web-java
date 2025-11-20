@@ -3,14 +3,22 @@ package org.kpi.lab1.service.implementation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
+import org.kpi.lab1.dto.product.ProductDto;
+import org.kpi.lab1.repository.ProductRepository;
+import org.kpi.lab1.repository.entity.ProductEntity;
 import org.kpi.lab1.service.ProductService;
 import org.kpi.lab1.service.RateService;
 import org.kpi.lab1.service.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -18,46 +26,38 @@ import org.springframework.stereotype.Service;
 public class ProductServiceImplementation implements ProductService {
   private final RateService rateService;
   private final ProductMapper productMapper;
+  private final ProductRepository productRepository;
   private final ConcurrentHashMap<Long, Product> products = buildProductsMock();
 
   @Override
+  @Transactional(readOnly = true)
   public List<Product> getAllProducts() {
-    return new ArrayList<>(products.values());
+    return productMapper.toProducts(productRepository.findAll());
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Product getProductById(Long id) {
-    return products.get(id);
+    ProductEntity entity = productRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+
+    return productMapper.toProduct(entity);
   }
 
   @Override
-  public Product addProduct(Product product) {
-    long newId = products.size() + 1L;
-    double rating = rateService.getProductById(product.getId() == null ? newId : product.getId());
-    Product mappedProduct = productMapper.toProduct(product, newId, rating);
-    products.put(mappedProduct.getId(), mappedProduct);
-    return mappedProduct;
+  @Transactional(propagation = Propagation.NESTED)
+  public Product addProduct(ProductDto product) {
+    try {
+      return productMapper.toProduct(productRepository.save(productMapper.toProductEntity(product)));
+    } catch (Exception e) {
+      log.error("Exception occurred while saving customer details");
+      throw new PersistenceException(e);
+    }
   }
-
-  @Override
-  public Product updateProduct(Long id, Product product) {
-    product =
-        Product.builder()
-            .id(product.getId())
-            .name(product.getName())
-            .description(product.getDescription())
-            .price(product.getPrice())
-            .rating(rateService.getProductById(product.getId()))
-            .category(product.getCategory())
-            .build();
-    products.put(id, product);
-    return product;
-  }
-
   @Override
   public void deleteProduct(Long id) {
     try {
-      products.remove(id);
+      productRepository.deleteById(id);
     } catch (Exception e) {
       log.error(e.getMessage());
     }

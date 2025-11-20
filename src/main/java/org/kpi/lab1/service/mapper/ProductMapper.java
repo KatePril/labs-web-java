@@ -6,6 +6,7 @@ import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.dto.product.ProductListDto;
+import org.kpi.lab1.repository.entity.ProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -26,6 +27,15 @@ public interface ProductMapper {
 
   List<ProductDto> toProductsDto(List<Product> products);
 
+  List<Product> toProducts(List<ProductEntity> products);
+
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
+  @Mapping(target = "price", source = "price")
+  @Mapping(target = "rating", source = "rating")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
+  Product toProduct(ProductEntity product);
+
   @Named("toCategory")
   default CategoryDto toCategoryDto(Category category) {
     return null;
@@ -42,4 +52,7 @@ public interface ProductMapper {
         .category(product.getCategory())
         .build();
   }
+
+  ProductEntity toProductEntity(ProductDto productDto);
+
 }
