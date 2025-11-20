@@ -1,10 +1,8 @@
 package org.kpi.lab1.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Data
@@ -18,7 +16,8 @@ public class CategoryEntity {
     @SequenceGenerator(name = "category_id_seq", sequenceName = "category_id_seq")
     Long id;
 
-    @Column(nullable = false, unique = true)
+    @NaturalId
+    @NonNull
     String name;
 
     String description;
