@@ -31,6 +31,6 @@ public class ProductEntity {
     Double rating;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
     CategoryEntity category;
 }

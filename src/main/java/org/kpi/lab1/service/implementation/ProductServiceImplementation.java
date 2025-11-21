@@ -54,7 +54,9 @@ public class ProductServiceImplementation implements ProductService {
       throw new PersistenceException(e);
     }
   }
+
   @Override
+  @Transactional
   public void deleteProduct(Long id) {
     try {
       productRepository.deleteById(id);
