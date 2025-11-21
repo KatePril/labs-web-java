@@ -27,7 +27,6 @@ public class ProductEntity {
     @Column(nullable = false)
     Double price;
 
-    @Column(nullable = false)
     Double rating;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
