@@ -11,6 +11,7 @@ import org.kpi.lab1.repository.entity.CategoryEntity;
 import org.kpi.lab1.service.CategoryService;
 import org.kpi.lab1.service.mapper.CategoryMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class CategoryServiceImplementation implements CategoryService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.NESTED)
     public Category addCategory(CategoryDto categoryDto) {
         try {
             return categoryMapper.toCategory(categoryRepository.save(categoryMapper.toCategoryEntity(categoryDto)));

@@ -39,7 +39,7 @@ public interface ProductItemMapper {
             .build();
     }
 
-    List<ProductItem> toProductItems(List<ProductItem> productItems);
+    List<ProductItemEntity> toProductItemsEntity(List<ProductItem> productItems);
 
     @Mapping(target = "quantity", source = "quantity")
     @Mapping(target = "product", source = "product", qualifiedByName = "toProduct")
