@@ -15,14 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface OrderMapper extends ProductItemMapper {
 
-    @Mapping(target = "total", source = "total")
-    @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoList")
-    OrderDto toOrderDto(Order order);
 
-    @Named("toProductItemDtoList")
-    default List<ProductItemDto> toOrderDtoList(List<ProductItem> orders) {
-        return orders.stream().map(this::toProductItemDto).toList();
-    }
 
     @Mapping(target = "total", source = "total")
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemEntityList")

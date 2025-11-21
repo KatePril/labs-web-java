@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.ProductItem;
 import org.kpi.lab1.domain.order.Order;
+import org.kpi.lab1.dto.product.ProductItemDto;
+import org.kpi.lab1.dto.product.ProductItemListDto;
 import org.kpi.lab1.repository.OrderRepository;
 import org.kpi.lab1.repository.entity.OrderEntity;
 import org.kpi.lab1.repository.entity.ProductItemEntity;
@@ -39,13 +41,13 @@ public class OrderServiceImplementation implements OrderService {
 
     @Override
     @Transactional(propagation = Propagation.NESTED)
-    public Order addOrder(List<ProductItem> productItems) {
+    public Order addOrder(ProductItemListDto productItems) {
         double total = 0;
-        for (ProductItem productItem : productItems) {
+        for (ProductItemDto productItem : productItems.getProductItems()) {
             total += productItem.getQuantity() * productItem.getProduct().getPrice();
         }
 
-        Order order = Order.builder().items(productItems).total(total).build();
+        Order order = Order.builder().items(productItems.getProductItems().stream().map(OrderMapper::toProductItem)).total(total).build();
         return orderMapper.toOrder(orderRepository.save(orderMapper.toOrderEntity(order)));
     }
 
