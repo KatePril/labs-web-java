@@ -64,20 +64,20 @@ public interface ProductItemMapper {
 
     @Mapping(target = "quantity", source = "quantity")
     @Mapping(target = "product", source = "product", qualifiedByName = "toProductEntity")
-    ProductItemEntity toProductItemEntity(ProductItemDto productItemDto);
+    ProductItemEntity toProductItemEntity(ProductItem productItem);
 
     @Named("toProductEntity")
-    default ProductEntity toProductEntity(ProductDto productDto) {
-        CategoryDto categoryDto = productDto.getCategory();
+    default ProductEntity toProductEntity(Product product) {
+        Category category = product.getCategory();
         return ProductEntity.builder()
-            .name(productDto.getName())
-            .description(productDto.getDescription())
-            .price(productDto.getPrice())
-            .rating(productDto.getRating())
+            .name(product.getName())
+            .description(product.getDescription())
+            .price(product.getPrice())
+            .rating(product.getRating())
             .category(
                 CategoryEntity.builder()
-                    .name(categoryDto.getName())
-                    .description(categoryDto.getDescription())
+                    .name(category.getName())
+                    .description(category.getDescription())
                     .build())
             .build();
     }

@@ -22,8 +22,8 @@ public interface OrderMapper extends ProductItemMapper {
     OrderEntity toOrderEntity(Order order);
 
     @Named("toProductItemEntityList")
-    default List<ProductItemEntity> toProductItemEntityList(List<ProductItemDto> productItemDtos) {
-        return productItemDtos.stream().map(this::toProductItemEntity).toList();
+    default List<ProductItemEntity> toProductItemEntityList(List<ProductItem> productItems) {
+        return productItems.stream().map(this::toProductItemEntity).toList();
     }
 
     @Mapping(target = "total", source = "total")
