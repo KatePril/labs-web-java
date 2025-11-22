@@ -102,4 +102,14 @@ public interface ProductItemMapper {
             .build();
     }
 
+    @Named("toProductItemEntityList")
+    default List<ProductItemEntity> toProductItemEntityList(List<ProductItem> productItems) {
+        return productItems.stream().map(this::toProductItemEntity).toList();
+    }
+
+    @Named("toProductItemList")
+    default List<ProductItem> toProductItemList(List<ProductItemEntity> entities) {
+        return entities.stream().map(this::toProductItem).toList();
+    }
+
 }

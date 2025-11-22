@@ -12,7 +12,7 @@ import org.mapstruct.Named;
 
 @Mapper(
         componentModel = "spring",
-        uses = { ProductItemMapper.class, OrderMapper.class }
+        uses = { ProductItemMapper.class }
 )
 public interface OrderMapper extends ProductItemMapper {
 
@@ -20,19 +20,9 @@ public interface OrderMapper extends ProductItemMapper {
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemEntityList")
     OrderEntity toOrderEntity(Order order);
 
-    @Named("toProductItemEntityList")
-    default List<ProductItemEntity> toProductItemEntityList(List<ProductItem> productItems) {
-        return productItems.stream().map(this::toProductItemEntity).toList();
-    }
-
     @Mapping(target = "total", source = "total")
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemList")
     Order toOrder(OrderEntity order);
-
-    @Named("toProductItemList")
-    default  List<ProductItem> toProductItemList(List<ProductItemEntity> productItemEntities) {
-        return productItemEntities.stream().map(this::toProductItem).toList();
-    }
 
     List<Order> toOrders(List<OrderEntity> orders);
     List<OrderDto> toOrdersDto(List<Order> orders);
