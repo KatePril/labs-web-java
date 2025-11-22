@@ -28,9 +28,10 @@ public interface OrderDtoMapper extends ProductItemDtoMapper {
     OrderDto toOrderDtoFromEntity(Order orderEntity);
 
     @Named("toProductItemDtoListFromEntity")
-    default List<ProductItemDto> toOrderDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
+    default List<ProductItemDto> toProductItemDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
         return productItemEntities.stream().map(this::toProductItemDtoFromEntity).toList();
     }
+
 
     List<OrderDto> toOrdersDto(List<Order> orders);
 
