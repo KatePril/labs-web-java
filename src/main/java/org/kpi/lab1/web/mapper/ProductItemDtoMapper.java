@@ -13,6 +13,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ProductItemDtoMapper {
 
@@ -54,5 +56,15 @@ public interface ProductItemDtoMapper {
                                 .description(category.getDescription())
                                 .build())
                 .build();
+    }
+
+    @Named("toProductItemDtoList")
+    default List<ProductItemDto> toProductItemDtoList(List<ProductItem> productItems) {
+        return productItems.stream().map(this::toProductItemDto).toList();
+    }
+
+    @Named("toProductItemDtoListFromEntity")
+    default List<ProductItemDto> toProductItemDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
+        return productItemEntities.stream().map(this::toProductItemDtoFromEntity).toList();
     }
 }

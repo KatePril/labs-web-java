@@ -14,25 +14,14 @@ import org.mapstruct.Named;
         componentModel = "spring", 
         uses = { ProductItemDtoMapper.class }
 )
-public interface OrderDtoMapper extends ProductItemDtoMapper {
+public interface OrderDtoMapper {
     @Mapping(target = "total", source = "total")
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoList")
     OrderDto toOrderDto(Order order);
 
-    @Named("toProductItemDtoList")
-    default List<ProductItemDto> toProductItemDtoList(List<ProductItem> productItems) {
-        return productItems.stream().map(this::toProductItemDto).toList();
-    }
-
     @Mapping(target = "total", source = "total")
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoListFromEntity")
     OrderDto toOrderDtoFromEntity(Order orderEntity);
-
-    @Named("toProductItemDtoListFromEntity")
-    default List<ProductItemDto> toProductItemDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
-        return productItemEntities.stream().map(this::toProductItemDtoFromEntity).toList();
-    }
-
 
     List<OrderDto> toOrdersDto(List<Order> orders);
 
