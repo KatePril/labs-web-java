@@ -1,14 +1,10 @@
 package org.kpi.lab1.service.implementation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.repository.ProductRepository;
@@ -27,7 +23,6 @@ public class ProductServiceImplementation implements ProductService {
   private final RateService rateService;
   private final ProductMapper productMapper;
   private final ProductRepository productRepository;
-  private final ConcurrentHashMap<Long, Product> products = buildProductsMock();
 
   @Override
   @Transactional(readOnly = true)
@@ -64,41 +59,4 @@ public class ProductServiceImplementation implements ProductService {
       log.error(e.getMessage());
     }
   }
-
-  private ConcurrentHashMap<Long, Product> buildProductsMock() {
-    Category category = Category.builder().name("School supplies").build();
-    Category category1 = Category.builder().name("Clothes").build();
-    ConcurrentHashMap<Long, Product> products = new ConcurrentHashMap<>();
-    products.put(
-        1L,
-        Product.builder()
-            .id(1L)
-            .name("Book")
-            .description("An interesting galaxy one")
-            .price(10.4)
-            .rating(4.5)
-            .category(category)
-            .build());
-    products.put(
-        2L,
-        Product.builder()
-            .id(2L)
-            .name("T-shirt")
-            .description("A comfortable star shirt")
-            .price(16.2)
-            .rating(3.5)
-            .category(category1)
-            .build());
-    products.put(
-        3L,
-        Product.builder()
-            .id(3L)
-            .name("Comet pencil")
-            .price(5.3)
-            .rating(5.0)
-            .category(category)
-            .build());
-    return products;
-  }
-  ;
 }

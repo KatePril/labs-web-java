@@ -47,7 +47,9 @@ public class OrderServiceImplementation implements OrderService {
             total += productItem.getQuantity() * productItem.getProduct().getPrice();
         }
 
-        Order order = Order.builder().items(productItems.getProductItems().stream().map(OrderMapper::toProductItem)).total(total).build();
+        Order order = Order.builder().items(
+                productItems.getProductItems().stream().map(orderMapper::toProductItemFromDto).toList()
+        ).total(total).build();
         return orderMapper.toOrder(orderRepository.save(orderMapper.toOrderEntity(order)));
     }
 

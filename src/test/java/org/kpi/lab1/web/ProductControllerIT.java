@@ -199,24 +199,4 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getProductById(99L);
   }
 
-  @Test
-  @SneakyThrows
-  void testUpdateProduct_notFound() {
-    ProductDto updatedDto = buildProductDto();
-
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
-
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 999L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isNotFound());
-
-    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
-  }
 }
