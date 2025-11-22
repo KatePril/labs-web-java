@@ -34,10 +34,10 @@ public interface ProductMapper {
   @Mapping(target = "description", source = "description")
   @Mapping(target = "price", source = "price")
   @Mapping(target = "rating", source = "rating")
-  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
   Product toProduct(ProductEntity product);
 
-  @Named("toCategory")
+  @Named("toCategoryDto")
   default CategoryDto toCategoryDto(CategoryEntity category) {
     return CategoryDto.builder()
         .name(category.getName())

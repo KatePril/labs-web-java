@@ -8,7 +8,6 @@ import org.kpi.lab1.dto.product.ProductItemDto;
 import org.kpi.lab1.repository.entity.ProductItemEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 @Mapper(
         componentModel = "spring", 
