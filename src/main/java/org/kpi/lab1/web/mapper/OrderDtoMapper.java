@@ -12,7 +12,7 @@ import org.mapstruct.Named;
 
 @Mapper(
         componentModel = "spring", 
-        uses = { ProductItemDtoMapper.class, OrderDtoMapper.class }
+        uses = { ProductItemDtoMapper.class }
 )
 public interface OrderDtoMapper extends ProductItemDtoMapper {
     @Mapping(target = "total", source = "total")
