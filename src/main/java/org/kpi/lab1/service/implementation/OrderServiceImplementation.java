@@ -1,21 +1,20 @@
 package org.kpi.lab1.service.implementation;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kpi.lab1.domain.ProductItem;
 import org.kpi.lab1.domain.order.Order;
 import org.kpi.lab1.dto.product.ProductItemDto;
 import org.kpi.lab1.dto.product.ProductItemListDto;
 import org.kpi.lab1.repository.OrderRepository;
 import org.kpi.lab1.repository.entity.OrderEntity;
-import org.kpi.lab1.repository.entity.ProductItemEntity;
 import org.kpi.lab1.service.OrderService;
 import org.kpi.lab1.service.mapper.OrderMapper;
+import org.kpi.lab1.service.mapper.ProductItemMapper;
+import org.kpi.lab1.web.mapper.ProductItemDtoMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -24,6 +23,7 @@ public class OrderServiceImplementation implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final ProductItemMapper productItemMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,7 +48,7 @@ public class OrderServiceImplementation implements OrderService {
         }
 
         Order order = Order.builder().items(
-                productItems.getProductItems().stream().map(orderMapper::toProductItemFromDto).toList()
+                productItems.getProductItems().stream().map(productItemMapper::toProductItemFromDto).toList()
         ).total(total).build();
         return orderMapper.toOrder(orderRepository.save(orderMapper.toOrderEntity(order)));
     }
