@@ -4,6 +4,7 @@ import org.kpi.lab1.domain.ProductItem;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
+import org.kpi.lab1.dto.order.OrderDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.dto.product.ProductItemDto;
 import org.kpi.lab1.repository.entity.CategoryEntity;
@@ -63,8 +64,8 @@ public interface ProductItemDtoMapper {
         return productItems.stream().map(this::toProductItemDto).toList();
     }
 
-    @Named("toProductItemDtoListFromEntity")
-    default List<ProductItemDto> toProductItemDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
-        return productItemEntities.stream().map(this::toProductItemDtoFromEntity).toList();
-    }
+//    @Named("toProductItemDtoListFromEntity")
+//    default List<ProductItemDto> toProductItemDtoListFromEntity(List<ProductItemEntity> productItemEntities) {
+//        return productItemEntities.stream().map(this::toProductItemDtoFromEntity).toList();
+//    }
 }

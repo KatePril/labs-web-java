@@ -18,9 +18,9 @@ public interface OrderDtoMapper {
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoList")
     OrderDto toOrderDto(Order order);
 
-    @Mapping(target = "total", source = "total")
-    @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoListFromEntity")
-    OrderDto toOrderDtoFromEntity(Order orderEntity);
+//    @Mapping(target = "total", source = "total")
+//    @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemDtoListFromEntity")
+//    OrderDto toOrderDtoFromEntity(Order orderEntity);
 
     List<OrderDto> toOrdersDto(List<Order> orders);
 
