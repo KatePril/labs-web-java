@@ -14,7 +14,7 @@ import org.mapstruct.Named;
         componentModel = "spring",
         uses = { ProductItemMapper.class }
 )
-public interface OrderMapper extends ProductItemMapper {
+public interface OrderMapper {
 
     @Mapping(target = "total", source = "total")
     @Mapping(target = "items", source = "items", qualifiedByName = "toProductItemEntityList")
