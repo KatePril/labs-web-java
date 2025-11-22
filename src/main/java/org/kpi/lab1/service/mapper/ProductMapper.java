@@ -19,8 +19,16 @@ public interface ProductMapper {
   @Mapping(target = "description", source = "description")
   @Mapping(target = "price", source = "price")
   @Mapping(target = "rating", source = "rating")
-  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
   ProductDto toProductDto(Product product);
+
+  @Named("toCategoryDto")
+  default CategoryDto toCategoryDto(Category category) {
+    return CategoryDto.builder()
+            .name(category.getName())
+            .description(category.getDescription())
+            .build();
+  }
 
   default ProductListDto toProductListDto(List<Product> products) {
     return ProductListDto.builder().products(toProductsDto(products)).build();
@@ -34,15 +42,15 @@ public interface ProductMapper {
   @Mapping(target = "description", source = "description")
   @Mapping(target = "price", source = "price")
   @Mapping(target = "rating", source = "rating")
-  @Mapping(target = "category", source = "category", qualifiedByName = "toCategoryDto")
+  @Mapping(target = "category", source = "category", qualifiedByName = "toCategory")
   Product toProduct(ProductEntity product);
 
-  @Named("toCategoryDto")
-  default CategoryDto toCategoryDto(CategoryEntity category) {
-    return CategoryDto.builder()
-        .name(category.getName())
-        .description(category.getDescription())
-        .build();
+  @Named("toCategory")
+  default Category toCategory(CategoryEntity category) {
+    return Category.builder()
+            .name(category.getName())
+            .description(category.getDescription())
+            .build();
   }
 
   default Product toProduct(Product product, long newId, double rating) {
