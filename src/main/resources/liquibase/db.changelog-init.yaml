@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createSequence:
             sequenceName: category_id_seq
-            incrementBy: 50
+            incrementBy: 1
 
         - createTable:
             tableName: category
@@ -34,7 +34,7 @@ databaseChangeLog:
 
         - createSequence:
             sequenceName: product_id_seq
-            incrementBy: 50
+            incrementBy: 1
 
         - createTable:
             tableName: product

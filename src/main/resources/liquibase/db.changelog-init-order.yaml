@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - createSequence:
             sequenceName: order_id_seq
-            incrementBy: 50
+            incrementBy: 1
 
         - createTable:
             tableName: order
