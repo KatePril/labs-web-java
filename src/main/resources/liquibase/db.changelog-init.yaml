@@ -29,7 +29,7 @@ databaseChangeLog:
 
         - addUniqueConstraint:
             tableName: category
-            columnName: name
+            columnNames: name
             constraintName: uq_category_name
 
         - createSequence:
@@ -73,7 +73,7 @@ databaseChangeLog:
 
         - addUniqueConstraint:
             tableName: product
-            columnName: name
+            columnNames: name
             constraintName: uq_product_name
 
         - addForeignKeyConstraint:
