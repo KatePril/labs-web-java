@@ -19,14 +19,18 @@ import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootTest(classes = {ProductServiceImplementation.class})
 @Import(MappersTestConfiguration.class)
 @DisplayName("Product Service Tests")
 @TestMethodOrder(OrderAnnotation.class)
+@EnableJpaRepositories("org.kpi.lab1.repository")
+@EntityScan("org.kpi.lab1.repository.entity")
 public class ProductServiceTest {
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
