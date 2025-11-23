@@ -25,9 +25,9 @@ public interface ProductMapper {
   @Named("toCategoryDto")
   default CategoryDto toCategoryDto(Category category) {
     return CategoryDto.builder()
-            .name(category.getName())
-            .description(category.getDescription())
-            .build();
+        .name(category.getName())
+        .description(category.getDescription())
+        .build();
   }
 
   default ProductListDto toProductListDto(List<Product> products) {
@@ -48,9 +48,9 @@ public interface ProductMapper {
   @Named("toCategory")
   default Category toCategory(CategoryEntity category) {
     return Category.builder()
-            .name(category.getName())
-            .description(category.getDescription())
-            .build();
+        .name(category.getName())
+        .description(category.getDescription())
+        .build();
   }
 
   default Product toProduct(Product product, long newId, double rating) {
@@ -66,5 +66,4 @@ public interface ProductMapper {
   }
 
   ProductEntity toProductEntity(ProductDto productDto);
-
 }

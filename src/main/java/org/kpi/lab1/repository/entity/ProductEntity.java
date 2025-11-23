@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Data
 @Builder(toBuilder = true)
@@ -14,22 +13,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "product")
 public class ProductEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
-    @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq")
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
+  @SequenceGenerator(name = "product_id_seq", sequenceName = "product_id_seq")
+  Long id;
 
-    @Column(nullable = false, unique = true)
-    String name;
+  @Column(nullable = false, unique = true)
+  String name;
 
-    String description;
+  String description;
 
-    @Column(nullable = false)
-    Double price;
+  @Column(nullable = false)
+  Double price;
 
-    Double rating;
+  Double rating;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
-    CategoryEntity category;
+  @ManyToOne(cascade = CascadeType.PERSIST)
+  @JoinColumn(name = "category_id", referencedColumnName = "id")
+  CategoryEntity category;
 }

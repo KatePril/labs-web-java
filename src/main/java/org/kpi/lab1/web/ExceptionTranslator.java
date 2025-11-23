@@ -1,5 +1,12 @@
 package org.kpi.lab1.web;
 
+import static org.kpi.lab1.util.ProductDetailsUtils.getValidationErrorsProblemDetail;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.ProblemDetail.forStatusAndDetail;
+
+import java.net.URI;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.featuretoggle.exception.DisabledFeatureToggleException;
 import org.kpi.lab1.web.exception.ParamsViolationDetails;
@@ -14,14 +21,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.net.URI;
-import java.util.List;
-
-import static org.kpi.lab1.util.ProductDetailsUtils.getValidationErrorsProblemDetail;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.ProblemDetail.forStatusAndDetail;
 
 @ControllerAdvice
 @Slf4j

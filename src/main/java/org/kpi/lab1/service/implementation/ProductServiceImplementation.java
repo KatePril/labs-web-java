@@ -33,7 +33,9 @@ public class ProductServiceImplementation implements ProductService {
   @Override
   @Transactional(readOnly = true)
   public Product getProductById(Long id) {
-    ProductEntity entity = productRepository.findById(id)
+    ProductEntity entity =
+        productRepository
+            .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
 
     return productMapper.toProduct(entity);
@@ -43,7 +45,8 @@ public class ProductServiceImplementation implements ProductService {
   @Transactional(propagation = Propagation.NESTED)
   public Product addProduct(ProductDto product) {
     try {
-      return productMapper.toProduct(productRepository.save(productMapper.toProductEntity(product)));
+      return productMapper.toProduct(
+          productRepository.save(productMapper.toProductEntity(product)));
     } catch (Exception e) {
       log.error("Exception occurred while saving customer details");
       throw new PersistenceException(e);

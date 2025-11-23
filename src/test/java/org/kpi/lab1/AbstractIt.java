@@ -17,27 +17,36 @@ import org.testcontainers.containers.GenericContainer;
 @DirtiesContext
 public abstract class AbstractIt {
 
-    private static final int POSTGRES_PORT = 5432;
+  private static final int POSTGRES_PORT = 5432;
 
-    static final GenericContainer POSTGRES_CONTAINER = new GenericContainer("postgres:15.6-alpine")
-            .withEnv("POSTGRES_PASSWORD", "postgres").withEnv("POSTGRES_DB", "postgres")
-            .withExposedPorts(POSTGRES_PORT);
+  static final GenericContainer POSTGRES_CONTAINER =
+      new GenericContainer("postgres:15.6-alpine")
+          .withEnv("POSTGRES_PASSWORD", "postgres")
+          .withEnv("POSTGRES_DB", "postgres")
+          .withExposedPorts(POSTGRES_PORT);
 
-    static {
-        POSTGRES_CONTAINER.start();
-    }
+  static {
+    POSTGRES_CONTAINER.start();
+  }
 
-    @RegisterExtension
-    static WireMockExtension wireMockServer = WireMockExtension.newInstance().options(wireMockConfig().dynamicPort()).configureStaticDsl(true).build();
+  @RegisterExtension
+  static WireMockExtension wireMockServer =
+      WireMockExtension.newInstance()
+          .options(wireMockConfig().dynamicPort())
+          .configureStaticDsl(true)
+          .build();
 
-    @DynamicPropertySource
-    static void setupTestContainerProperties(DynamicPropertyRegistry registry) {
-        registry.add("application.payment-service.base-path", wireMockServer::baseUrl);
-        registry.add("spring.datasource.url", () -> format("jdbc:postgresql://%s:%d/postgres",
+  @DynamicPropertySource
+  static void setupTestContainerProperties(DynamicPropertyRegistry registry) {
+    registry.add("application.payment-service.base-path", wireMockServer::baseUrl);
+    registry.add(
+        "spring.datasource.url",
+        () ->
+            format(
+                "jdbc:postgresql://%s:%d/postgres",
                 POSTGRES_CONTAINER.getHost(), POSTGRES_CONTAINER.getMappedPort(POSTGRES_PORT)));
-        registry.add("spring.datasource.username", () -> "postgres");
-        registry.add("spring.datasource.password", () -> "postgres");
-        WireMock.configureFor(wireMockServer.getPort());
-    }
-
+    registry.add("spring.datasource.username", () -> "postgres");
+    registry.add("spring.datasource.password", () -> "postgres");
+    WireMock.configureFor(wireMockServer.getPort());
+  }
 }

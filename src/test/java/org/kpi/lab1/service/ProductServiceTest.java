@@ -33,11 +33,9 @@ public class ProductServiceTest {
   private static final double PRODUCT_RATING = 4.9;
   private static final Category CATEGORY = Category.builder().id(1L).name("test category").build();
 
-  @MockBean
-  private RateService rateService;
+  @MockBean private RateService rateService;
 
-  @Autowired
-  private ProductServiceImplementation productService;
+  @Autowired private ProductServiceImplementation productService;
 
   @Test
   @Order(1)

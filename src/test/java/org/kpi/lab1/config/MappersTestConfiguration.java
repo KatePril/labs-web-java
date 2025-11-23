@@ -15,43 +15,43 @@ import org.springframework.context.annotation.Bean;
 @TestConfiguration
 public class MappersTestConfiguration {
 
-    @Bean
-    public ProductMapper productMapper() {
-        return Mappers.getMapper(ProductMapper.class);
-    }
+  @Bean
+  public ProductMapper productMapper() {
+    return Mappers.getMapper(ProductMapper.class);
+  }
 
-    @Bean
-    public ProductDtoMapper productDtoMapper() {
-        return Mappers.getMapper(ProductDtoMapper.class);
-    }
+  @Bean
+  public ProductDtoMapper productDtoMapper() {
+    return Mappers.getMapper(ProductDtoMapper.class);
+  }
 
-    @Bean
-    public CategoryMapper categoryMapper() {
-        return Mappers.getMapper(CategoryMapper.class);
-    }
+  @Bean
+  public CategoryMapper categoryMapper() {
+    return Mappers.getMapper(CategoryMapper.class);
+  }
 
-    @Bean
-    public CategoryDtoMapper categoryDtoMapper() {
-        return Mappers.getMapper(CategoryDtoMapper.class);
-    }
+  @Bean
+  public CategoryDtoMapper categoryDtoMapper() {
+    return Mappers.getMapper(CategoryDtoMapper.class);
+  }
 
-    @Bean
-    public ProductItemMapper productItemMapper() {
-        return Mappers.getMapper(ProductItemMapper.class);
-    }
+  @Bean
+  public ProductItemMapper productItemMapper() {
+    return Mappers.getMapper(ProductItemMapper.class);
+  }
 
-    @Bean
-    public ProductItemDtoMapper productItemDtoMapper() {
-        return Mappers.getMapper(ProductItemDtoMapper.class);
-    }
+  @Bean
+  public ProductItemDtoMapper productItemDtoMapper() {
+    return Mappers.getMapper(ProductItemDtoMapper.class);
+  }
 
-    @Bean
-    public OrderMapper orderMapper() {
-        return Mappers.getMapper(OrderMapper.class);
-    }
+  @Bean
+  public OrderMapper orderMapper() {
+    return Mappers.getMapper(OrderMapper.class);
+  }
 
-    @Bean
-    public OrderDtoMapper orderDtoMapper() {
-        return Mappers.getMapper(OrderDtoMapper.class);
-    }
+  @Bean
+  public OrderDtoMapper orderDtoMapper() {
+    return Mappers.getMapper(OrderDtoMapper.class);
+  }
 }

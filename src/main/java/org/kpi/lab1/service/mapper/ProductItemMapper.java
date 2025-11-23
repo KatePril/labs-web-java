@@ -1,6 +1,7 @@
 package org.kpi.lab1.service.mapper;
 
 
+import java.util.List;
 import org.kpi.lab1.domain.ProductItem;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
@@ -13,8 +14,6 @@ import org.kpi.lab1.repository.entity.ProductItemEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProductItemMapper {

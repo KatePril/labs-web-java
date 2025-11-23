@@ -13,15 +13,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "product_item")
 public class ProductItemEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_item_id_seq")
-    @SequenceGenerator(name = "product_item_id_seq", sequenceName = "product_item_id_seq")
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_item_id_seq")
+  @SequenceGenerator(name = "product_item_id_seq", sequenceName = "product_item_id_seq")
+  Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
-    ProductEntity product;
+  @ManyToOne
+  @JoinColumn(name = "product_id", referencedColumnName = "id", nullable = false)
+  ProductEntity product;
 
-    @Column(nullable = false)
-    int quantity;
+  @Column(nullable = false)
+  int quantity;
 }

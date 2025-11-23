@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Entity
 @Data
 @Builder(toBuilder = true)
@@ -16,14 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "order")
 public class OrderEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_seq")
-    @SequenceGenerator(name = "order_id_seq", sequenceName = "order_id_seq")
-    Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_id_seq")
+  @SequenceGenerator(name = "order_id_seq", sequenceName = "order_id_seq")
+  Long id;
 
-    @ManyToMany
-    List<ProductItemEntity> items;
+  @ManyToMany
+  List<ProductItemEntity> items;
 
-    @Column(nullable = false)
-    Double total;
+  @Column(nullable = false)
+  Double total;
 }
