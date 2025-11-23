@@ -1,57 +1,57 @@
 databaseChangeLog:
   - changeSet:
-    id: lab-3-3
-    author: kate_pril
-    changes:
-      - createSequence:
-          sequenceName: order_id_seq
-          incrementBy: 10
+      id: lab-3-3
+      author: kate_pril
+      changes:
+        - createSequence:
+            sequenceName: order_id_seq
+            incrementBy: 10
 
-      - createTable:
-          tableName: order
-          columns:
-            - column:
-                name: id
-                type: BIGINT
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: total
-                type: DECIMAL(10,2)
-                constraints:
-                  nullable: false
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: total
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
 
-      - createTable:
-          tableName: order_product_item
-          columns:
-            - column:
-                name: id
-                type: BIGINT
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: order_id
-                type: BIGINT
-                constraints:
-                  nullable: false
-            - column:
-                name: product_item_id
-                type: BIGINT
-                constraints:
-                  nullable: false
+        - createTable:
+            tableName: order_product_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: product_item_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
 
-      - addForeignKeyConstraint:
-          baseTableName: order_product_item
-          baseColumnNames: product_item_id
-          referencedTableName: product_item
-          referencedColumnNames: id
-          constraintName: fk_order_product_item_product_item
+        - addForeignKeyConstraint:
+            baseTableName: order_product_item
+            baseColumnNames: product_item_id
+            referencedTableName: product_item
+            referencedColumnNames: id
+            constraintName: fk_order_product_item_product_item
 
-      - addForeignKeyConstraint:
-          baseTableName: order_product_item
-          baseColumnNames: order_id
-          referencedTableName: order
-          referencedColumnNames: id
-          constraintName: fk_order_product_item_order
+        - addForeignKeyConstraint:
+            baseTableName: order_product_item
+            baseColumnNames: order_id
+            referencedTableName: order
+            referencedColumnNames: id
+            constraintName: fk_order_product_item_order

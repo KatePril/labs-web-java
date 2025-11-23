@@ -1,35 +1,35 @@
 databaseChangeLog:
   - changeSet:
-    id: lab-3-2
-    author: kate_pril
-    changes:
-      - createSequence:
-          sequenceName: product_item_id_seq
-          incrementBy: 1
+      id: lab-3-2
+      author: kate_pril
+      changes:
+        - createSequence:
+            sequenceName: product_item_id_seq
+            incrementBy: 1
 
-      - createTable:
-          tableName: product_item
-          columns:
-            - column:
-                name: id
-                type: BIGINT
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: product_id
-                type: BIGINT
-                constraints:
-                  nullable: false
-            - column:
-                name: quantity
-                type: INT
-                constraints:
-                  nullable: false
+        - createTable:
+            tableName: product_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
 
-      - addForeignKeyConstraint:
-          baseTableName: product_item
-          baseColumnNames: product_id
-          referencedTableName: product
-          referencedColumnNames: id
-          constraintName: fk_product_item_product
+        - addForeignKeyConstraint:
+            baseTableName: product_item
+            baseColumnNames: product_id
+            referencedTableName: product
+            referencedColumnNames: id
+            constraintName: fk_product_item_product

@@ -1,84 +1,84 @@
 databaseChangeLog:
   - changeSet:
-    id: lab-3-1
-    author: kate_pril
-    changes:
-      - createSequence:
-          sequenceName: category_id_seq
-          incrementBy: 1
+      id: lab-3-1
+      author: kate_pril
+      changes:
+        - createSequence:
+            sequenceName: category_id_seq
+            incrementBy: 1
 
-      - createTable:
-          tableName: category
-          columns:
-            - column:
-                name: id
-                type: BIGINT
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: name
-                type: VARCHAR(255)
-                constraints:
-                  nullable: false
-            - column:
-                name: description
-                type: TEXT
-                constraints:
-                  nullable: true
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
 
-      - addUniqueConstraint:
-          tableName: category
-          columnName: name
-          constraintName: uq_category_name
+        - addUniqueConstraint:
+            tableName: category
+            columnName: name
+            constraintName: uq_category_name
 
-      - createSequence:
-          sequenceName: product_id_seq
-          incrementBy: 2
+        - createSequence:
+            sequenceName: product_id_seq
+            incrementBy: 2
 
-      - createTable:
-          tableName: product
-          columns:
-            - column:
-                name: id
-                type: BIGINT
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: name
-                type: VARCHAR(255)
-                constraints:
-                  nullable: false
-            - column:
-                name: description
-                type: TEXT
-                constraints:
-                  nullable: true
-            - column:
-                name: price
-                type: DECIMAL(10,2)
-                constraints:
-                  nullable: false
-            - column:
-                name: rating
-                type: DECIMAL(10,2)
-                constraints:
-                  nullable: true
-            - column:
-                name: category_id
-                type: BIGINT
-                constraints:
-                  nullable: true
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: true
+              - column:
+                  name: price
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: DECIMAL(10,2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
 
-      - addUniqueConstraint:
-          tableName: product
-          columnName: name
-          constraintName: uq_product_name
+        - addUniqueConstraint:
+            tableName: product
+            columnName: name
+            constraintName: uq_product_name
 
-      - addForeignKeyConstraint:
-          baseTableName: product
-          baseColumnNames: category_id
-          referencedTableName: category
-          referencedColumnNames: id
-          constraintName: fk_product_category
+        - addForeignKeyConstraint:
+            baseTableName: product
+            baseColumnNames: category_id
+            referencedTableName: category
+            referencedColumnNames: id
+            constraintName: fk_product_category
