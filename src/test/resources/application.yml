@@ -15,19 +15,19 @@ spring:
         connection.provider_disables_autocommit: true
     hibernate:
       ddl-auto: none
-    datasource:
-      url: jdbc:postgresql://localhost:5432/galactic_cats
-      username: postgres
-      password: postgres
-      hikari:
-        auto-commit: false
-        connection-timeout: 30000
-        maximum-pool-size: 10
-        max-lifetime: 1800000
-        pool-name: galactic-market
-    liquibase:
-      change-log: classpath:liquibase/changelog.yaml
-      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/galactic_cats
+    username: postgres
+    password: postgres
+    hikari:
+      auto-commit: false
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      max-lifetime: 1800000
+      pool-name: galactic-market
+  liquibase:
+    change-log: classpath:liquibase/changelog.yaml
+    enabled: true
 
 application:
   feature:
