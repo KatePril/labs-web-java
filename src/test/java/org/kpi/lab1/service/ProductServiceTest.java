@@ -38,7 +38,7 @@ public class ProductServiceTest {
 
   @MockBean private RateService rateService;
 
-  @Autowired private ProductServiceImplementation productService;
+  @Autowired private ProductService productService;
 
   @Test
   @Order(1)
