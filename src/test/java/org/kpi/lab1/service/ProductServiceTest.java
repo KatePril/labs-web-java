@@ -23,7 +23,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
-@SpringBootTest(classes = {ProductServiceImplementation.class})
+@SpringBootTest(
+        classes = {ProductServiceImplementation.class},
+        properties = "spring.liquibase.enabled=false"
+)
 @Import(MappersTestConfiguration.class)
 @DisplayName("Product Service Tests")
 @TestMethodOrder(OrderAnnotation.class)
