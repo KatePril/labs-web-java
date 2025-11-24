@@ -47,6 +47,16 @@ public abstract class AbstractIt {
                 POSTGRES_CONTAINER.getHost(), POSTGRES_CONTAINER.getMappedPort(POSTGRES_PORT)));
     registry.add("spring.datasource.username", () -> "postgres");
     registry.add("spring.datasource.password", () -> "postgres");
+
+    registry.add(
+            "spring.liquibase.url",
+            () -> format(
+                    "jdbc:postgresql://%s:%d/postgres",
+                    POSTGRES_CONTAINER.getHost(), POSTGRES_CONTAINER.getMappedPort(POSTGRES_PORT))
+    );
+    registry.add("spring.liquibase.user", () -> "postgres");
+    registry.add("spring.liquibase.password", () -> "postgres");
+
     WireMock.configureFor(wireMockServer.getPort());
   }
 }
