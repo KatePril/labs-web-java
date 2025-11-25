@@ -16,6 +16,7 @@ import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.repository.ProductRepository;
+import org.kpi.lab1.repository.entity.CategoryEntity;
 import org.kpi.lab1.repository.entity.ProductEntity;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,13 @@ public class ProductServiceTest {
   @BeforeEach
   void setupMockRepository() {
     db = new HashMap<>();
-    db.put(1L, new ProductEntity(1L, "Book", "An interesting galaxy one", 10.4, 0.0, null));
-    db.put(2L, new ProductEntity(2L, "T-shirt", "A comfy cotton T-shirt", 15.0, 0.0, null));
-    db.put(3L, new ProductEntity(3L, "Comet pencil", "Smooth graphite pencil", 2.5, 0.0, null));
+
+    CategoryEntity category1 = CategoryEntity.builder().id(1L).name("School supplies").build();
+    CategoryEntity category2 = CategoryEntity.builder().id(1L).name("Clothes").build();
+
+    db.put(1L, new ProductEntity(1L, "Book", "An interesting galaxy one", 10.4, 0.0, category1));
+    db.put(2L, new ProductEntity(2L, "T-shirt", "A comfy cotton T-shirt", 15.0, 0.0, category2));
+    db.put(3L, new ProductEntity(3L, "Comet pencil", "Smooth graphite pencil", 2.5, 0.0, category1));
 
     when(rateService.getProductById(anyLong())).thenReturn(PRODUCT_RATING);
   }
