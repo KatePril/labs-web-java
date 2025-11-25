@@ -42,4 +42,13 @@ public class CategoryController {
     }
     return ResponseEntity.ok(categoryDtoMapper.toCategoryDto(category));
   }
+
+  @GetMapping("/{name}")
+  public ResponseEntity<CategoryDto> getCategoryByName(@PathVariable String name) {
+    Category category = categoryService.findByNaturalId(name);
+    if (category == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return ResponseEntity.ok(categoryDtoMapper.toCategoryDto(category));
+  }
 }

@@ -14,4 +14,6 @@ public interface CategoryService {
   Category addCategory(CategoryDto categoryDto);
 
   void deleteCategoryById(Long id);
+
+  Category findByNaturalId(String naturalId);
 }

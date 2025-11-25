@@ -59,4 +59,15 @@ public class CategoryServiceImplementation implements CategoryService {
       log.error(e.getMessage());
     }
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Category findByNaturalId(String naturalId) {
+    CategoryEntity categoryEntity =
+            categoryRepository
+                    .findByNaturalId(naturalId)
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found with natural id " + naturalId));
+    return categoryMapper.toCategory(categoryEntity);
+  }
+
 }
