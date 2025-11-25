@@ -58,7 +58,7 @@ public class ProductServiceImplementation implements ProductService {
   public void deleteProduct(Long id) {
     try {
       productRepository.deleteById(id);
-    } catch (Exception e) {
+    } catch (EntityNotFoundException e) {
       log.error(e.getMessage());
     }
   }
