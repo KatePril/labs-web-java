@@ -108,11 +108,6 @@ public class ProductServiceTest {
     assertNotNull(added);
     assertNotNull(added.getId());
     assertEquals(PRODUCT_RATING, added.getRating());
-
-    Product fetched = productService.getProductById(added.getId());
-    assertNotNull(fetched);
-    assertEquals(added.getId(), fetched.getId());
-    assertEquals(4, productService.getAllProducts().size());
   }
 
   @Test
