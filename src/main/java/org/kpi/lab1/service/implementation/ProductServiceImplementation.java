@@ -6,12 +6,17 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kpi.lab1.domain.product.Product;
+import org.kpi.lab1.domain.product.ProductInfo;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.repository.ProductRepository;
 import org.kpi.lab1.repository.entity.ProductEntity;
+import org.kpi.lab1.repository.projection.ProductDetailsProjection;
 import org.kpi.lab1.service.ProductService;
 import org.kpi.lab1.service.RateService;
 import org.kpi.lab1.service.mapper.ProductMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +66,17 @@ public class ProductServiceImplementation implements ProductService {
     } catch (EntityNotFoundException e) {
       log.error(e.getMessage());
     }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ProductInfo> getProductByCategory(String category, int start, int pageSize) {
+    Pageable pageable = PageRequest.of(start, pageSize);
+    Page<ProductDetailsProjection> page =
+        productRepository.findProductByCategory(category, pageable);
+
+    return page.map(
+        proj ->
+            new ProductInfo(proj.productName(), proj.productDescription(), proj.productPrice()));
   }
 }
