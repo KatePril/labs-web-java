@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.kpi.lab1.config.MappersTestConfiguration;
@@ -131,6 +133,40 @@ public class ProductServiceTest {
     assertDoesNotThrow(() -> productService.deleteProduct(1000L));
     assertThrows(EntityNotFoundException.class,
             () -> productService.getProductById(1000L));
+  }
+
+  @Test
+  @Order(6)
+  @DisplayName("Should return empty list when no products exist")
+  void testGetAllProductsEmpty() {
+    db.clear();
+    List<Product> products = productService.getAllProducts();
+    assertNotNull(products);
+    assertTrue(products.isEmpty());
+  }
+
+  @Test
+  @Order(7)
+  @DisplayName("Should throw PersistenceException when saving product fails")
+  void testAddProductThrowsPersistenceException() {
+    when(productRepository.save(any(ProductEntity.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    ProductDto newProduct = buildProductDto();
+
+    PersistenceException ex = assertThrows(PersistenceException.class,
+            () -> productService.addProduct(newProduct));
+    assertTrue(ex.getMessage().contains("DB error") || ex.getCause().getMessage().contains("DB error"));
+  }
+
+  @Test
+  @Order(8)
+  @DisplayName("Should throw EntityNotFoundException for non-existent product")
+  void testGetProductByIdNonExistent() {
+    when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+    EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+            () -> productService.getProductById(999L));
+    assertTrue(ex.getMessage().contains("Product not found with id: 999"));
   }
 
   private ProductDto buildProductDto() {
