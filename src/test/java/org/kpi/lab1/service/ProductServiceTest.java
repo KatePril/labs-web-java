@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.kpi.lab1.config.MappersTestConfiguration;
@@ -54,6 +56,7 @@ public class ProductServiceTest {
     db.put(2L, new ProductEntity(2L, "T-shirt", "A comfy cotton T-shirt", 15.0, 0.0, category2));
     db.put(3L, new ProductEntity(3L, "Comet pencil", "Smooth graphite pencil", 2.5, 0.0, category1));
 
+    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
     when(rateService.getProductById(anyLong())).thenReturn(PRODUCT_RATING);
   }
 
@@ -61,8 +64,6 @@ public class ProductServiceTest {
   @Order(1)
   @DisplayName("Test get all products method")
   public void testGetAllProducts() {
-    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
-
     List<Product> products = productService.getAllProducts();
     assertNotNull(products);
     assertEquals(3, products.size());
@@ -119,11 +120,9 @@ public class ProductServiceTest {
       return null;
     }).when(productRepository).deleteById(anyLong());
 
-    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
-
-    int initialSize = productService.getAllProducts().size();
+    assertEquals(3, productService.getAllProducts().size());
     productService.deleteProduct(1L);
-    assertEquals(initialSize - 1, productService.getAllProducts().size());
+    assertEquals(2, productService.getAllProducts().size());
   }
 
   @Test
@@ -131,7 +130,8 @@ public class ProductServiceTest {
   @DisplayName("Should handle deleting non-existent product gracefully")
   void testHandleDeletingNonExistentProduct() {
     assertDoesNotThrow(() -> productService.deleteProduct(1000L));
-    assertNull(productService.getProductById(1000L));
+    assertThrows(EntityNotFoundException.class,
+            () -> productService.getProductById(1000L));
   }
 
   private ProductDto buildProductDto() {
