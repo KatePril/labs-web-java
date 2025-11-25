@@ -114,16 +114,16 @@ public class ProductServiceTest {
   @Order(4)
   @DisplayName("Test delete product by ID")
   void testDeleteProduct() {
-    doAnswer(
-            inv -> {
-              db.remove(inv.getArgument(0));
-              return null;
-            })
-        .when(productRepository)
-        .deleteById(anyLong());
+    doAnswer(inv -> {
+      db.remove(inv.getArgument(0));
+      return null;
+    }).when(productRepository).deleteById(anyLong());
 
+    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
+
+    int initialSize = productService.getAllProducts().size();
     productService.deleteProduct(1L);
-    assertEquals(3, productService.getAllProducts().size());
+    assertEquals(initialSize - 1, productService.getAllProducts().size());
   }
 
   @Test
