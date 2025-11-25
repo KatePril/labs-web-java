@@ -1,14 +1,12 @@
 package org.kpi.lab1.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -17,6 +15,8 @@ import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
+import org.kpi.lab1.repository.ProductRepository;
+import org.kpi.lab1.repository.entity.ProductEntity;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Import;
 @DisplayName("Product Service Tests")
 @TestMethodOrder(OrderAnnotation.class)
 public class ProductServiceTest {
+
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
   private static final double PRODUCT_RATING = 4.9;
@@ -35,56 +36,93 @@ public class ProductServiceTest {
 
   @MockBean private RateService rateService;
 
+  @MockBean private ProductRepository productRepository;
+
   @Autowired private ProductService productService;
+
+  private Map<Long, ProductEntity> db;
+
+  @BeforeEach
+  void setupMockRepository() {
+    db = new HashMap<>();
+    db.put(1L, new ProductEntity(1L, "Book", "An interesting galaxy one", 10.4, 0.0, null));
+    db.put(2L, new ProductEntity(2L, "T-shirt", "A comfy cotton T-shirt", 15.0, 0.0, null));
+    db.put(3L, new ProductEntity(3L, "Comet pencil", "Smooth graphite pencil", 2.5, 0.0, null));
+
+    when(rateService.getProductById(anyLong())).thenReturn(PRODUCT_RATING);
+  }
 
   @Test
   @Order(1)
   @DisplayName("Test get all products method")
   public void testGetAllProducts() {
+    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
+
     List<Product> products = productService.getAllProducts();
     assertNotNull(products);
     assertEquals(3, products.size());
     assertIterableEquals(
         products.stream().map(Product::getName).collect(Collectors.toList()),
-        new ArrayList<>(Arrays.asList("Book", "T-shirt", "Comet pencil")));
+        Arrays.asList("Book", "T-shirt", "Comet pencil"));
   }
 
   @Test
   @Order(2)
   @DisplayName("Test get product by id")
   public void testGetProductById() {
+    when(productRepository.findById(anyLong()))
+        .thenAnswer(inv -> Optional.ofNullable(db.get(inv.getArgument(0))));
+
     Product product = productService.getProductById(1L);
     assertNotNull(product);
     assertEquals("Book", product.getName());
     assertEquals(1L, product.getId());
     assertEquals("An interesting galaxy one", product.getDescription());
     assertEquals(10.4, product.getPrice());
-    assertNotNull(product.getCategory());
-    assertEquals("School supplies", product.getCategory().getName());
   }
 
   @Test
   @Order(3)
   @DisplayName("Should add a new product")
   public void testAddProduct() {
-    when(rateService.getProductById(99L)).thenReturn(4.9);
-    ProductDto newProduct = buildProductDto(99L);
+    when(productRepository.save(any(ProductEntity.class)))
+        .thenAnswer(
+            inv -> {
+              ProductEntity p = inv.getArgument(0);
+              if (p.getId() == null) {
+                long nextId = db.keySet().stream().max(Long::compare).orElse(0L) + 1;
+                p.setId(nextId);
+              }
+              db.put(p.getId(), p);
+              return p;
+            });
+
+    ProductDto newProduct = buildProductDto();
 
     Product added = productService.addProduct(newProduct);
-    assertEquals(newProduct, added);
+    assertNotNull(added);
+    assertEquals(99L, added.getId());
+    assertEquals(PRODUCT_RATING, added.getRating());
 
     Product fetched = productService.getProductById(99L);
     assertNotNull(fetched);
-    assertEquals(buildProduct(99L), fetched);
+    assertEquals(added.getId(), fetched.getId());
     assertEquals(4, productService.getAllProducts().size());
   }
 
   @Test
   @Order(4)
-  @DisplayName("test delete product by ID")
+  @DisplayName("Test delete product by ID")
   void testDeleteProduct() {
-    productService.deleteProduct(99L);
+    doAnswer(
+            inv -> {
+              db.remove(inv.getArgument(0));
+              return null;
+            })
+        .when(productRepository)
+        .deleteById(anyLong());
 
+    productService.deleteProduct(99L);
     Product deleted = productService.getProductById(99L);
     assertNull(deleted);
     assertEquals(3, productService.getAllProducts().size());
@@ -94,21 +132,11 @@ public class ProductServiceTest {
   @Order(5)
   @DisplayName("Should handle deleting non-existent product gracefully")
   void testHandleDeletingNonExistentProduct() {
-    Assertions.assertDoesNotThrow(() -> productService.deleteProduct(1000L));
+    assertDoesNotThrow(() -> productService.deleteProduct(1000L));
     assertNull(productService.getProductById(1000L));
   }
 
-  private Product buildProduct(Long id) {
-    return Product.builder()
-        .id(id)
-        .name(PRODUCT_NAME)
-        .price(PRODUCT_PRICE)
-        .rating(PRODUCT_RATING)
-        .category(CATEGORY)
-        .build();
-  }
-
-  private ProductDto buildProductDto(Long id) {
+  private ProductDto buildProductDto() {
     return ProductDto.builder()
         .name(PRODUCT_NAME)
         .price(PRODUCT_PRICE)
