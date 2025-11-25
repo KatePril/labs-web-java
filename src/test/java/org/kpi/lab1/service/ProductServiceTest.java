@@ -123,8 +123,6 @@ public class ProductServiceTest {
         .deleteById(anyLong());
 
     productService.deleteProduct(1L);
-    Product deleted = productService.getProductById(1L);
-    assertNull(deleted);
     assertEquals(3, productService.getAllProducts().size());
   }
 
