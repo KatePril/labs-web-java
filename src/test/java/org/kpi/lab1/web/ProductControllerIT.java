@@ -206,4 +206,17 @@ public class ProductControllerIT extends AbstractIt {
 
     verify(productService, times(1)).getProductById(99L);
   }
+
+  @Test
+  @SneakyThrows
+  void testGetAllProducts_emptyList() {
+    when(productService.getAllProducts()).thenReturn(List.of());
+
+    mockMvc
+            .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
+
+    verify(productService, times(1)).getAllProducts();
+  }
 }
