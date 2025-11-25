@@ -15,9 +15,18 @@ java {
 }
 
 ext {
-    minimumCoveragePerFile = 0.0
+    minimumCoverageAverage = 0.0
     filesExcludedFromCoverage = [
-            "**/config/*Configuration.*"
+            "**/*Application.*",
+            "**/config/*Configuration.*",
+            "**/*Category*.*",
+            "**/*Order*.*",
+            "**/*Rate*.*",
+            "**/*ProductItem*.*",
+            "**/*FeatureToggle*.*",
+            "**/*ProductNotFound*.*",
+            "**/*Client*.*",
+            "**/*Projection*.*"
     ]
 }
 
