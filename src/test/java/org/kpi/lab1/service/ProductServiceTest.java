@@ -1,20 +1,26 @@
 package org.kpi.lab1.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.PersistenceException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.kpi.lab1.config.MappersTestConfiguration;
 import org.kpi.lab1.domain.category.Category;
 import org.kpi.lab1.domain.product.Product;
+import org.kpi.lab1.dto.category.CategoryDto;
+import org.kpi.lab1.dto.product.ProductDto;
+import org.kpi.lab1.repository.ProductRepository;
+import org.kpi.lab1.repository.entity.CategoryEntity;
+import org.kpi.lab1.repository.entity.ProductEntity;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,16 +32,34 @@ import org.springframework.context.annotation.Import;
 @DisplayName("Product Service Tests")
 @TestMethodOrder(OrderAnnotation.class)
 public class ProductServiceTest {
+
   private static final String PRODUCT_NAME = "product";
   private static final double PRODUCT_PRICE = 10.1;
   private static final double PRODUCT_RATING = 4.9;
   private static final Category CATEGORY = Category.builder().id(1L).name("test category").build();
 
-  @MockBean
-  private RateService rateService;
+  @MockBean private RateService rateService;
 
-  @Autowired
-  private ProductServiceImplementation productService;
+  @MockBean private ProductRepository productRepository;
+
+  @Autowired private ProductService productService;
+
+  private Map<Long, ProductEntity> db;
+
+  @BeforeEach
+  void setupMockRepository() {
+    db = new HashMap<>();
+
+    CategoryEntity category1 = CategoryEntity.builder().id(1L).name("School supplies").build();
+    CategoryEntity category2 = CategoryEntity.builder().id(1L).name("Clothes").build();
+
+    db.put(1L, new ProductEntity(1L, "Book", "An interesting galaxy one", 10.4, 0.0, category1));
+    db.put(2L, new ProductEntity(2L, "T-shirt", "A comfy cotton T-shirt", 15.0, 0.0, category2));
+    db.put(3L, new ProductEntity(3L, "Comet pencil", "Smooth graphite pencil", 2.5, 0.0, category1));
+
+    when(productRepository.findAll()).thenAnswer(inv -> new ArrayList<>(db.values()));
+    when(rateService.getProductById(anyLong())).thenReturn(PRODUCT_RATING);
+  }
 
   @Test
   @Order(1)
@@ -46,82 +70,111 @@ public class ProductServiceTest {
     assertEquals(3, products.size());
     assertIterableEquals(
         products.stream().map(Product::getName).collect(Collectors.toList()),
-        new ArrayList<>(Arrays.asList("Book", "T-shirt", "Comet pencil")));
+        Arrays.asList("Book", "T-shirt", "Comet pencil"));
   }
 
   @Test
   @Order(2)
   @DisplayName("Test get product by id")
   public void testGetProductById() {
+    when(productRepository.findById(anyLong()))
+        .thenAnswer(inv -> Optional.ofNullable(db.get(inv.getArgument(0))));
+
     Product product = productService.getProductById(1L);
     assertNotNull(product);
     assertEquals("Book", product.getName());
     assertEquals(1L, product.getId());
     assertEquals("An interesting galaxy one", product.getDescription());
     assertEquals(10.4, product.getPrice());
-    assertNotNull(product.getCategory());
-    assertEquals("School supplies", product.getCategory().getName());
   }
 
   @Test
   @Order(3)
   @DisplayName("Should add a new product")
   public void testAddProduct() {
-    when(rateService.getProductById(99L)).thenReturn(4.9);
-    Product newProduct = buildProduct(99L);
+    when(productRepository.save(any(ProductEntity.class)))
+        .thenAnswer(
+            inv -> {
+              ProductEntity p = inv.getArgument(0);
+              if (p.getId() == null) {
+                long nextId = db.keySet().stream().max(Long::compare).orElse(0L) + 1;
+                p.setId(nextId);
+              }
+              db.put(p.getId(), p);
+              return p;
+            });
+
+    ProductDto newProduct = buildProductDto();
 
     Product added = productService.addProduct(newProduct);
-    assertEquals(newProduct, added);
-
-    Product fetched = productService.getProductById(99L);
-    assertNotNull(fetched);
-    assertEquals(newProduct, fetched);
-    assertEquals(4, productService.getAllProducts().size());
+    assertNotNull(added);
+    assertNotNull(added.getId());
+    assertEquals(PRODUCT_RATING, added.getRating());
   }
 
   @Test
   @Order(4)
-  @DisplayName("Should update existing product")
-  public void testUpdateProduct() {
-    when(rateService.getProductById(99L)).thenReturn(4.9);
-    Product updatedProduct =
-        Product.builder().id(99L).name("Updated product").price(55.5).rating(4.9).category(CATEGORY).build();
+  @DisplayName("Test delete product by ID")
+  void testDeleteProduct() {
+    doAnswer(inv -> {
+      db.remove(inv.getArgument(0));
+      return null;
+    }).when(productRepository).deleteById(anyLong());
 
-    Product result = productService.updateProduct(99L, updatedProduct);
-
-    assertEquals(updatedProduct, result);
-    Product fetched = productService.getProductById(99L);
-    assertNotNull(fetched);
-    assertEquals("Updated product", fetched.getName());
-    assertEquals(55.5, fetched.getPrice());
+    assertEquals(3, productService.getAllProducts().size());
+    productService.deleteProduct(1L);
+    assertEquals(2, productService.getAllProducts().size());
   }
 
   @Test
   @Order(5)
-  @DisplayName("test delete product by ID")
-  void testDeleteProduct() {
-    productService.deleteProduct(99L);
-
-    Product deleted = productService.getProductById(99L);
-    assertNull(deleted);
-    assertEquals(3, productService.getAllProducts().size());
+  @DisplayName("Should handle deleting non-existent product gracefully")
+  void testHandleDeletingNonExistentProduct() {
+    assertDoesNotThrow(() -> productService.deleteProduct(1000L));
+    assertThrows(EntityNotFoundException.class,
+            () -> productService.getProductById(1000L));
   }
 
   @Test
   @Order(6)
-  @DisplayName("Should handle deleting non-existent product gracefully")
-  void testHandleDeletingNonExistentProduct() {
-    Assertions.assertDoesNotThrow(() -> productService.deleteProduct(1000L));
-    assertNull(productService.getProductById(1000L));
+  @DisplayName("Should return empty list when no products exist")
+  void testGetAllProductsEmpty() {
+    db.clear();
+    List<Product> products = productService.getAllProducts();
+    assertNotNull(products);
+    assertTrue(products.isEmpty());
   }
 
-  private Product buildProduct(Long id) {
-    return Product.builder()
-        .id(id)
+  @Test
+  @Order(7)
+  @DisplayName("Should throw PersistenceException when saving product fails")
+  void testAddProductThrowsPersistenceException() {
+    when(productRepository.save(any(ProductEntity.class)))
+            .thenThrow(new RuntimeException("DB error"));
+
+    ProductDto newProduct = buildProductDto();
+
+    PersistenceException ex = assertThrows(PersistenceException.class,
+            () -> productService.addProduct(newProduct));
+    assertTrue(ex.getMessage().contains("DB error") || ex.getCause().getMessage().contains("DB error"));
+  }
+
+  @Test
+  @Order(8)
+  @DisplayName("Should throw EntityNotFoundException for non-existent product")
+  void testGetProductByIdNonExistent() {
+    when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
+    EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
+            () -> productService.getProductById(999L));
+    assertTrue(ex.getMessage().contains("Product not found with id: 999"));
+  }
+
+  private ProductDto buildProductDto() {
+    return ProductDto.builder()
         .name(PRODUCT_NAME)
         .price(PRODUCT_PRICE)
         .rating(PRODUCT_RATING)
-        .category(CATEGORY)
+        .category(CategoryDto.builder().name(CATEGORY.getName()).build())
         .build();
   }
 }

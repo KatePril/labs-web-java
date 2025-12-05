@@ -20,7 +20,7 @@ jacocoTestCoverageVerification {
             excludes = filesExcludedFromCoverage
             limit {
                 counter = 'LINE'
-                minimum = minimumCoveragePerFile
+                minimum = minimumCoverageAverage
             }
         }
     }

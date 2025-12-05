@@ -7,6 +7,7 @@ import org.kpi.lab1.domain.product.Product;
 @Value
 @Builder(toBuilder = true)
 public class ProductItem {
+  Long id;
   Product product;
   int quantity;
 }

@@ -4,17 +4,14 @@ import static com.github.dockerjava.zerodep.shaded.org.apache.hc.core5.http.Http
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-
 import com.github.tomakehurst.wiremock.client.WireMock;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,20 +43,15 @@ public class ProductControllerIT extends AbstractIt {
   private static final CategoryDto PRODUCT_CATEGORY =
       CategoryDto.builder().name("Comet products").build();
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-  @Autowired
-  private ProductDtoMapper productDtoMapper;
+  @Autowired private ProductDtoMapper productDtoMapper;
 
-  @MockitoBean
-  private ProductServiceImplementation productService;
+  @MockitoBean private ProductServiceImplementation productService;
 
-  @MockitoBean
-  private RateServiceImplementation rateService;
+  @MockitoBean private RateServiceImplementation rateService;
 
   @BeforeEach
   void setUp() {
@@ -82,11 +74,14 @@ public class ProductControllerIT extends AbstractIt {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
+    stubFor(
+        WireMock.post("/rating-service/v1/ratings")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.addProduct(any(Product.class))).thenReturn(product);
+    when(productService.addProduct(any(ProductDto.class))).thenReturn(product);
 
     mockMvc
         .perform(
@@ -99,7 +94,7 @@ public class ProductControllerIT extends AbstractIt {
         .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
         .andExpect(jsonPath("$.price").value(PRODUCT_PRICE));
 
-    verify(productService, times(1)).addProduct(any(Product.class));
+    verify(productService, times(1)).addProduct(any(ProductDto.class));
   }
 
   @Test
@@ -108,8 +103,11 @@ public class ProductControllerIT extends AbstractIt {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
+    stubFor(
+        WireMock.post("/rating-service/v1/ratings")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getAllProducts()).thenReturn(List.of(product));
@@ -130,8 +128,11 @@ public class ProductControllerIT extends AbstractIt {
     ProductDto productDto = buildProductDto();
     Product product = productDtoMapper.toProduct(productDto);
 
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
+    stubFor(
+        WireMock.post("/rating-service/v1/ratings")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getProductById(1L)).thenReturn(product);
@@ -148,40 +149,6 @@ public class ProductControllerIT extends AbstractIt {
 
   @Test
   @SneakyThrows
-  void testUpdateProduct() {
-    ProductDto updatedDto =
-        ProductDto.builder()
-            .name("Updated Comet product")
-            .description("Updated star description")
-            .price(30.0)
-            .rating(PRODUCT_RATING)
-            .category(PRODUCT_CATEGORY)
-            .build();
-
-    Product updatedProduct = productDtoMapper.toProduct(updatedDto);
-
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.updateProduct(eq(1L), any(Product.class))).thenReturn(updatedProduct);
-
-    mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("Updated Comet product"))
-        .andExpect(jsonPath("$.description").value("Updated star description"))
-        .andExpect(jsonPath("$.price").value(30.0));
-
-    verify(productService, times(1)).updateProduct(eq(1L), any(Product.class));
-  }
-
-  @Test
-  @SneakyThrows
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
@@ -193,8 +160,11 @@ public class ProductControllerIT extends AbstractIt {
   @Test
   @SneakyThrows
   void testCreateProduct_invalidData_returnsBadRequest() {
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
+    stubFor(
+        WireMock.post("/rating-service/v1/ratings")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
     ProductDto invalidProduct =
@@ -212,16 +182,20 @@ public class ProductControllerIT extends AbstractIt {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
+        .andExpect(
+            jsonPath("$.InvalidParams[0].reason").value(ValidDescription.INVALID_DESCRIPTION));
 
-    verify(productService, never()).addProduct(any(Product.class));
+    verify(productService, never()).addProduct(any(ProductDto.class));
   }
 
   @Test
   @SneakyThrows
   void testGetProductById_notFound() {
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
+    stubFor(
+        WireMock.post("/rating-service/v1/ratings")
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
     when(productService.getProductById(99L)).thenReturn(null);
@@ -235,22 +209,14 @@ public class ProductControllerIT extends AbstractIt {
 
   @Test
   @SneakyThrows
-  void testUpdateProduct_notFound() {
-    ProductDto updatedDto = buildProductDto();
-
-    stubFor(WireMock.post("/rating-service/v1/ratings")
-            .willReturn(aResponse().withStatus(200)
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                    .withBody(objectMapper.writeValueAsBytes(5.0))));
-    when(productService.updateProduct(eq(999L), any(Product.class))).thenReturn(null);
+  void testGetAllProducts_emptyList() {
+    when(productService.getAllProducts()).thenReturn(List.of());
 
     mockMvc
-        .perform(
-            put("/api/v1/products/{id}", 999L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatedDto)))
-        .andExpect(status().isNotFound());
+            .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.length()").value(0));
 
-    verify(productService, times(1)).updateProduct(eq(999L), any(Product.class));
+    verify(productService, times(1)).getAllProducts();
   }
 }

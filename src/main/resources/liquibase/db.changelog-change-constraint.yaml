@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: lab-3-4
+      author: kate_pril
+      changes:
+        - dropUniqueConstraint:
+            tableName: product
+            constraintName: uq_product_name
+
+        - addUniqueConstraint:
+            tableName: product
+            columnNames: category_id, name
+            constraintName: uq_product_category_name
