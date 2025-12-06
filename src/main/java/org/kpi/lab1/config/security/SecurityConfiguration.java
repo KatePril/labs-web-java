@@ -1,93 +1,69 @@
 package org.kpi.lab1.config.security;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.ServletException;
-
 import org.kpi.lab1.util.SecurityUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  private static final String API_FOOS = "api/v1/admin/**";
 
-    http.addFilterBefore(
+  @Bean
+  @Order(1)
+  public SecurityFilterChain apiFoosFilterChain(HttpSecurity http) throws Exception {
+    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new AuthorityConverter());
+
+    http.cors(cors -> cors.disable())
+        .csrf(csrf -> csrf.disable())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(
             (request, response, chain) -> {
-              String apiKey = request.getHeader(SecurityUtil.X_API_KEY_HEADER);
+              HttpServletRequest httpRequest = (HttpServletRequest) request;
+              String apiKey = httpRequest.getHeader(SecurityUtil.X_API_KEY_HEADER);
               if (apiKey == null || apiKey.isBlank()) {
-                throw new ServletException("Missing API key");
+                throw new RuntimeException("Missing API key");
               }
               chain.doFilter(request, response);
             },
-            AbstractPreAuthenticatedProcessingFilter.class)
+            UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(
             authz ->
                 authz
-                    .requestMatchers(HttpMethod.GET, "/api/v1/admin/**")
+                    .requestMatchers(HttpMethod.GET, API_FOOS)
                     .hasAuthority("SCOPE_read")
-                    .requestMatchers(HttpMethod.POST, "/api/v1/admin/")
+                    .requestMatchers(HttpMethod.POST, "/foos")
                     .hasAuthority("SCOPE_write")
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(
-            oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtConverter())));
+            oauth2 ->
+                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
     return http.build();
   }
 
   @Bean
-  public JwtAuthenticationConverter customJwtConverter() {
-    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-    converter.setJwtGrantedAuthoritiesConverter(this::extractAuthorities);
+  @Order(2)
+  public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests(
+            authz -> authz.requestMatchers("/login/**").permitAll().anyRequest().authenticated())
+        .oauth2Login();
 
-    return converter;
-  }
-
-  private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
-    Collection<GrantedAuthority> jwtAuthorities = new AuthorityConverter().convert(jwt);
-
-    HttpServletRequest request =
-        org.springframework.security.core.context.SecurityContextHolder.getContext()
-                        .getAuthentication()
-                    instanceof AbstractAuthenticationToken token
-                && token.getDetails() instanceof HttpServletRequest r
-            ? r
-            : null;
-
-    List<GrantedAuthority> headerAuthorities = new ArrayList<>();
-
-    if (request != null) {
-      String claimsHeader = request.getHeader(SecurityUtil.ROLE_CLAIMS_HEADER);
-      if (claimsHeader != null && !claimsHeader.isBlank()) {
-        headerAuthorities =
-            Arrays.stream(claimsHeader.split(","))
-                .map(String::trim)
-                .map(role -> "ROLE_" + role)
-                .map(org.springframework.security.core.authority.SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-      }
-    }
-
-    List<GrantedAuthority> merged = new ArrayList<>();
-    merged.addAll(jwtAuthorities);
-    merged.addAll(headerAuthorities);
-
-    return merged;
+    return http.build();
   }
 }
