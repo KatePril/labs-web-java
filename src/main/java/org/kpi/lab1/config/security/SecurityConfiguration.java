@@ -3,6 +3,7 @@ package org.kpi.lab1.config.security;
 import java.util.*;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
 
 import org.kpi.lab1.util.SecurityUtil;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,7 @@ public class SecurityConfiguration {
             (request, response, chain) -> {
               String apiKey = request.getHeader(SecurityUtil.X_API_KEY_HEADER);
               if (apiKey == null || apiKey.isBlank()) {
-                response.setStatus(401);
-                return;
+                throw new ServletException("Missing API key");
               }
               chain.doFilter(request, response);
             },
