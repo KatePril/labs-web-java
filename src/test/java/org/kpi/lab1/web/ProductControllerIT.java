@@ -89,6 +89,7 @@ public class ProductControllerIT extends AbstractIt {
     mockMvc
         .perform(
             post("/api/v1/admin/products")
+                .header("X-Mystery-Api-Key", "dummy-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productDto)))
@@ -118,7 +119,10 @@ public class ProductControllerIT extends AbstractIt {
     when(productService.getAllProducts()).thenReturn(List.of(product));
 
     mockMvc
-        .perform(get("/api/v1/admin/products").accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products")
+                .header("X-Mystery-Api-Key", "dummy-key")
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
         .andExpect(jsonPath("$[0].description").value(PRODUCT_DESCRIPTION))
@@ -145,7 +149,10 @@ public class ProductControllerIT extends AbstractIt {
     when(productService.getProductById(1L)).thenReturn(product);
 
     mockMvc
-        .perform(get("/api/v1/admin/products/{id}", 1L).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products/{id}", 1L)
+                .header("X-Mystery-Api-Key", "dummy-key")
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
         .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
@@ -160,7 +167,9 @@ public class ProductControllerIT extends AbstractIt {
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
-    mockMvc.perform(delete("/api/v1/admin/products/{id}", 1L)).andExpect(status().isNoContent());
+    mockMvc
+        .perform(delete("/api/v1/admin/products/{id}", 1L).header("X-Mystery-Api-Key", "dummy-key"))
+        .andExpect(status().isNoContent());
 
     verify(productService, times(1)).deleteProduct(1L);
   }
@@ -189,6 +198,7 @@ public class ProductControllerIT extends AbstractIt {
     mockMvc
         .perform(
             post("/api/v1/admin/products")
+                .header("X-Mystery-Api-Key", "dummy-key")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
         .andExpect(status().isBadRequest())
@@ -213,7 +223,10 @@ public class ProductControllerIT extends AbstractIt {
     when(productService.getProductById(99L)).thenReturn(null);
 
     mockMvc
-        .perform(get("/api/v1/admin/products/{id}", 99L).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products/{id}", 99L)
+                .header("X-Mystery-Api-Key", "dummy-key")
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
 
     verify(productService, times(1)).getProductById(99L);
@@ -226,7 +239,10 @@ public class ProductControllerIT extends AbstractIt {
     when(productService.getAllProducts()).thenReturn(List.of());
 
     mockMvc
-        .perform(get("/api/v1/admin/products").accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products")
+                .header("X-Mystery-Api-Key", "dummy-key")
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(0));
 
