@@ -28,6 +28,7 @@ import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -69,6 +70,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testCreateProduct() {
     ProductDto productDto = buildProductDto();
@@ -81,6 +83,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.addProduct(any(ProductDto.class))).thenReturn(product);
 
     mockMvc
@@ -98,6 +101,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testGetAllProducts() {
     ProductDto productDto = buildProductDto();
@@ -110,6 +114,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getAllProducts()).thenReturn(List.of(product));
 
     mockMvc
@@ -123,6 +128,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testGetProductById() {
     ProductDto productDto = buildProductDto();
@@ -135,6 +141,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getProductById(1L)).thenReturn(product);
 
     mockMvc
@@ -148,6 +155,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
@@ -158,6 +166,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testCreateProduct_invalidData_returnsBadRequest() {
     stubFor(
@@ -167,6 +176,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     ProductDto invalidProduct =
         ProductDto.builder()
             .name("Product")
@@ -189,6 +199,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testGetProductById_notFound() {
     stubFor(
@@ -198,6 +209,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getProductById(99L)).thenReturn(null);
 
     mockMvc
@@ -208,14 +220,15 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(username = "test", roles = "USER")
   @SneakyThrows
   void testGetAllProducts_emptyList() {
     when(productService.getAllProducts()).thenReturn(List.of());
 
     mockMvc
-            .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(0));
+        .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
 
     verify(productService, times(1)).getAllProducts();
   }
