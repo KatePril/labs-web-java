@@ -1,7 +1,5 @@
 package org.kpi.lab1.config.security;
 
-import org.kpi.lab1.util.SecurityUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -10,58 +8,51 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
-  private static final String API_FOOS = "api/v1/admin/**";
+  private static final String API_PATH = "api/v1/admin/orders/**";
 
   @Bean
   @Order(1)
-  public SecurityFilterChain apiFoosFilterChain(HttpSecurity http) throws Exception {
-    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new AuthorityConverter());
+  public SecurityFilterChain apiOrdersChain(HttpSecurity http, JwtDecoder jwtDecoder)
+      throws Exception {
+    JwtAuthenticationConverter jwtAuthConverter = new JwtAuthenticationConverter();
+    jwtAuthConverter.setJwtGrantedAuthoritiesConverter(new AuthorityConverter());
 
-    http.cors(cors -> cors.disable())
+    http.securityMatcher(API_PATH)
+        .cors(cors -> cors.disable())
         .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(
-            (request, response, chain) -> {
-              HttpServletRequest httpRequest = (HttpServletRequest) request;
-              String apiKey = httpRequest.getHeader(SecurityUtil.X_API_KEY_HEADER);
-              if (apiKey == null || apiKey.isBlank()) {
-                throw new RuntimeException("Missing API key");
-              }
-              chain.doFilter(request, response);
-            },
-            UsernamePasswordAuthenticationFilter.class)
+            new CosmicApiKeyFilter(jwtDecoder), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(
-            authz ->
-                authz
-                    .requestMatchers(HttpMethod.GET, API_FOOS)
+            auth ->
+                auth.requestMatchers(HttpMethod.GET, API_PATH)
                     .hasAuthority("SCOPE_read")
-                    .requestMatchers(HttpMethod.POST, "/foos")
+                    .requestMatchers(HttpMethod.POST, "api/v1/admin/orders")
                     .hasAuthority("SCOPE_write")
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(
-            oauth2 ->
-                oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+            oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)));
 
     return http.build();
   }
 
   @Bean
   @Order(2)
-  public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain defaultChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
-            authz -> authz.requestMatchers("/login/**").permitAll().anyRequest().authenticated())
+            auth -> auth.requestMatchers(API_PATH).permitAll().anyRequest().authenticated())
         .oauth2Login();
 
     return http.build();
