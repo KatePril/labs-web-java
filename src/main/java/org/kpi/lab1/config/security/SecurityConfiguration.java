@@ -18,11 +18,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
-  private static final String API_PATH = "api/v1/admin/orders/**";
+  private static final String API_PATH = "api/v1/admin/products/**";
 
   @Bean
   @Order(1)
-  public SecurityFilterChain apiOrdersChain(HttpSecurity http, JwtDecoder jwtDecoder)
+  public SecurityFilterChain apiroductsChain(HttpSecurity http, JwtDecoder jwtDecoder)
       throws Exception {
     JwtAuthenticationConverter jwtAuthConverter = new JwtAuthenticationConverter();
     jwtAuthConverter.setJwtGrantedAuthoritiesConverter(new AuthorityConverter());
@@ -38,7 +38,7 @@ public class SecurityConfiguration {
             auth ->
                 auth.requestMatchers(HttpMethod.GET, API_PATH)
                     .hasAuthority("SCOPE_read")
-                    .requestMatchers(HttpMethod.POST, "api/v1/admin/orders")
+                    .requestMatchers(HttpMethod.POST, "api/v1/admin/products")
                     .hasAuthority("SCOPE_write")
                     .anyRequest()
                     .authenticated())
