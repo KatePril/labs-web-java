@@ -8,18 +8,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import org.kpi.lab1.util.SecurityUtil;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.util.Collection;
 
 public class CosmicApiKeyFilter extends OncePerRequestFilter {
 
@@ -33,8 +40,19 @@ public class CosmicApiKeyFilter extends OncePerRequestFilter {
 
     private final AuthenticationProvider jwtAuthProvider;
 
+    public CosmicApiKeyFilter(JwtDecoder decoder, Converter<Jwt, Collection<GrantedAuthority>> authorityConverter) {
+        JwtAuthenticationProvider provider = new JwtAuthenticationProvider(decoder);
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authorityConverter);
+
+        provider.setJwtAuthenticationConverter(converter);
+
+        this.jwtAuthProvider = provider;
+    }
+
     public CosmicApiKeyFilter(JwtDecoder decoder) {
-        this.jwtAuthProvider = new JwtAuthenticationProvider(decoder);
+        this(decoder, new AuthorityConverter());
     }
 
     @Override
@@ -69,6 +87,7 @@ public class CosmicApiKeyFilter extends OncePerRequestFilter {
                 return;
             }
 
+            SecurityContextHolder.getContext().setAuthentication(authResult);
             filterChain.doFilter(request, response);
 
         } catch (AuthenticationException failed) {

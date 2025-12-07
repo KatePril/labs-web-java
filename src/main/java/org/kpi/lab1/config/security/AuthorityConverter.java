@@ -11,9 +11,13 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 public class AuthorityConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
-    public Collection<GrantedAuthority> convert(final Jwt jwt) {
-        final Optional<List<String>> authorities = Optional.ofNullable((List<String>) jwt.getClaims().get("authorities"));
-        return authorities.stream().flatMap(List::stream).map(roleName -> "ROLE_" + roleName) // prefix to map to a Spring Security "role"
-                .map(SimpleGrantedAuthority::new).collect(Collectors.toUnmodifiableList());
-    }
+  public Collection<GrantedAuthority> convert(final Jwt jwt) {
+    final Optional<List<String>> authorities =
+        Optional.ofNullable((List<String>) jwt.getClaims().get("authorities"));
+    return authorities.stream()
+        .flatMap(List::stream)
+        .map(roleName -> "ROLE_" + roleName)
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toUnmodifiableList());
+  }
 }

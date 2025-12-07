@@ -1,17 +1,23 @@
 package org.kpi.lab1.config.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Collection;
 
 @Configuration
 @EnableWebSecurity
@@ -22,10 +28,18 @@ public class SecurityConfiguration {
 
   @Bean
   @Order(1)
-  public SecurityFilterChain apiroductsChain(HttpSecurity http, JwtDecoder jwtDecoder)
-      throws Exception {
+  public SecurityFilterChain apiProductsChain(
+      HttpSecurity http,
+      JwtDecoder jwtDecoder,
+      @Autowired(required = false)
+          Converter<Jwt, Collection<GrantedAuthority>> authorityConverter // Inject converter
+      ) throws Exception {
+
+    Converter<Jwt, Collection<GrantedAuthority>> converter =
+        authorityConverter != null ? authorityConverter : new AuthorityConverter();
+
     JwtAuthenticationConverter jwtAuthConverter = new JwtAuthenticationConverter();
-    jwtAuthConverter.setJwtGrantedAuthoritiesConverter(new AuthorityConverter());
+    jwtAuthConverter.setJwtGrantedAuthoritiesConverter(converter);
 
     http.securityMatcher(API_PATH)
         .cors(cors -> cors.disable())
@@ -33,7 +47,8 @@ public class SecurityConfiguration {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(
-            new CosmicApiKeyFilter(jwtDecoder), UsernamePasswordAuthenticationFilter.class)
+            new CosmicApiKeyFilter(jwtDecoder, converter),
+            UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(HttpMethod.GET, API_PATH)
