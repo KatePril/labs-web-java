@@ -70,7 +70,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_write")
   @SneakyThrows
   void testCreateProduct() {
     ProductDto productDto = buildProductDto();
@@ -101,7 +101,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_read")
   @SneakyThrows
   void testGetAllProducts() {
     ProductDto productDto = buildProductDto();
@@ -128,7 +128,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_read")
   @SneakyThrows
   void testGetProductById() {
     ProductDto productDto = buildProductDto();
@@ -155,7 +155,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_write")
   @SneakyThrows
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
@@ -166,7 +166,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_write")
   @SneakyThrows
   void testCreateProduct_invalidData_returnsBadRequest() {
     stubFor(
@@ -199,7 +199,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_read")
   @SneakyThrows
   void testGetProductById_notFound() {
     stubFor(
@@ -220,7 +220,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
-  @WithMockUser(username = "test", roles = "USER")
+  @WithMockUser(username = "test", roles = "USER", authorities = "SCOPE_read")
   @SneakyThrows
   void testGetAllProducts_emptyList() {
     when(productService.getAllProducts()).thenReturn(List.of());
