@@ -263,3 +263,15 @@ public class ProductControllerIT extends AbstractIt {
     verify(productService, times(1)).getAllProducts();
   }
 }
+/*
+ *          _   _
+ *         (.)_(.)
+ *      _ (   _   ) _
+ *     / \/`-----'\/ \
+ *   __\ ( (     ) ) /__
+ *   )   /\ \._./ /\   (
+ *    )_/ /|\   /|\ \_(
+ *        " "   " "
+ *
+ *        🐸 Frog
+ */
