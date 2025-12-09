@@ -18,20 +18,25 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.kpi.lab1.AbstractIt;
+import org.kpi.lab1.config.TestSecurityConfig;
 import org.kpi.lab1.domain.product.Product;
 import org.kpi.lab1.dto.category.CategoryDto;
 import org.kpi.lab1.dto.product.ProductDto;
 import org.kpi.lab1.dto.validation.ValidDescription;
 import org.kpi.lab1.service.implementation.ProductServiceImplementation;
 import org.kpi.lab1.service.implementation.RateServiceImplementation;
+import org.kpi.lab1.util.SecurityUtil;
 import org.kpi.lab1.web.mapper.ProductDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @AutoConfigureMockMvc
+@Import(TestSecurityConfig.class)
 @DisplayName("Product Controller Integration Tests (with Mapper)")
 @Tag("product-service")
 public class ProductControllerIT extends AbstractIt {
@@ -42,6 +47,7 @@ public class ProductControllerIT extends AbstractIt {
   private static final double PRODUCT_RATING = 5.0;
   private static final CategoryDto PRODUCT_CATEGORY =
       CategoryDto.builder().name("Comet products").build();
+  private static final String TEST_JWT_TOKEN = "test-token";
 
   @Autowired private MockMvc mockMvc;
 
@@ -69,6 +75,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testCreateProduct() {
     ProductDto productDto = buildProductDto();
@@ -81,11 +88,14 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.addProduct(any(ProductDto.class))).thenReturn(product);
 
     mockMvc
         .perform(
-            post("/api/v1/products")
+            post("/api/v1/admin/products")
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(productDto)))
@@ -98,6 +108,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testGetAllProducts() {
     ProductDto productDto = buildProductDto();
@@ -110,10 +121,15 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getAllProducts()).thenReturn(List.of(product));
 
     mockMvc
-        .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products")
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].name").value(PRODUCT_NAME))
         .andExpect(jsonPath("$[0].description").value(PRODUCT_DESCRIPTION))
@@ -123,6 +139,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testGetProductById() {
     ProductDto productDto = buildProductDto();
@@ -135,10 +152,15 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getProductById(1L)).thenReturn(product);
 
     mockMvc
-        .perform(get("/api/v1/products/{id}", 1L).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products/{id}", 1L)
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(PRODUCT_NAME))
         .andExpect(jsonPath("$.description").value(PRODUCT_DESCRIPTION))
@@ -148,16 +170,23 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testDeleteProduct() {
     doNothing().when(productService).deleteProduct(1L);
 
-    mockMvc.perform(delete("/api/v1/products/{id}", 1L)).andExpect(status().isNoContent());
+    mockMvc
+        .perform(
+            delete("/api/v1/admin/products/{id}", 1L)
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN))
+        .andExpect(status().isNoContent());
 
     verify(productService, times(1)).deleteProduct(1L);
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testCreateProduct_invalidData_returnsBadRequest() {
     stubFor(
@@ -167,6 +196,7 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     ProductDto invalidProduct =
         ProductDto.builder()
             .name("Product")
@@ -178,7 +208,9 @@ public class ProductControllerIT extends AbstractIt {
 
     mockMvc
         .perform(
-            post("/api/v1/products")
+            post("/api/v1/admin/products")
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProduct)))
         .andExpect(status().isBadRequest())
@@ -189,6 +221,7 @@ public class ProductControllerIT extends AbstractIt {
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testGetProductById_notFound() {
     stubFor(
@@ -198,25 +231,47 @@ public class ProductControllerIT extends AbstractIt {
                     .withStatus(200)
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .withBody(objectMapper.writeValueAsBytes(5.0))));
+
     when(productService.getProductById(99L)).thenReturn(null);
 
     mockMvc
-        .perform(get("/api/v1/products/{id}", 99L).accept(MediaType.APPLICATION_JSON))
+        .perform(
+            get("/api/v1/admin/products/{id}", 99L)
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
 
     verify(productService, times(1)).getProductById(99L);
   }
 
   @Test
+  @WithMockUser(roles = "ADMIN")
   @SneakyThrows
   void testGetAllProducts_emptyList() {
     when(productService.getAllProducts()).thenReturn(List.of());
 
     mockMvc
-            .perform(get("/api/v1/products").accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.length()").value(0));
+        .perform(
+            get("/api/v1/admin/products")
+                .header(SecurityUtil.X_API_KEY_HEADER, TEST_JWT_TOKEN)
+                .header("Authorization", "Bearer " + TEST_JWT_TOKEN)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(0));
 
     verify(productService, times(1)).getAllProducts();
   }
 }
+/*
+ *          _   _
+ *         (.)_(.)
+ *      _ (   _   ) _
+ *     / \/`-----'\/ \
+ *   __\ ( (     ) ) /__
+ *   )   /\ \._./ /\   (
+ *    )_/ /|\   /|\ \_(
+ *        " "   " "
+ *
+ *        🐸 Frog
+ */
